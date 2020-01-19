@@ -34,3 +34,6 @@
 /Debug
 /console/Debug
 /game/Debug
+/game/x64/Debug
+/x64/Debug
+/.vs
