@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+/.vs/dx-game-engine/v16
+/Debug
+/console/Debug
+/game/Debug
