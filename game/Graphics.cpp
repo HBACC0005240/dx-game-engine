@@ -90,10 +90,8 @@ void Graphics::Render()
 	//-----------------------------
 	wchar_t g_strFPS[50] = { 0 };
 	int charCount = swprintf_s(g_strFPS, 20, TEXT("FPS:%0.2f (%d,%d)"), Getfps(), wnd.pt.x, wnd.pt.y);
-	RECT r = { 300,100,500,300 };
 	RECT formatRect;
 	GetClientRect(wnd.mHwnd, &formatRect);
-	RECT tR = wnd.wcRect;
 	m_d3dFont->DrawText(NULL, g_strFPS, charCount, &formatRect, DT_TOP | DT_LEFT, D3DCOLOR_XRGB(255, 39, 136));
 
 	//-----------------------------

@@ -155,7 +155,6 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameWind.h" />
     <ClInclude Include="Graphics.h" />
-    <ClInclude Include="Output.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

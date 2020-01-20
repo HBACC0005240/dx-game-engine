@@ -1,6 +1,6 @@
 #include "GameWind.h"
 
-const wchar_t* GameWind::wndClassName = L"Game v1.0";
+const wchar_t* GameWind::wndClassName = L"Game v2.0";
 POINT GameWind::pt = {0,0};
 /*+---------------------------------------------------
  *| ´´½¨´°¿Ú
