@@ -1,13 +1,15 @@
 #include "GameWind.h"
 #include "Graphics.h"
+#include <tchar.h> //swprintf_s
 
 Graphics::Graphics(GameWind& wnd):wnd(wnd){
+	OutputDebugString(L"Graphics()构造\n");
 	InitD3D();
-	OutputDebugString(L"Graphics() 初始化 D3D");
 }
 
 Graphics::~Graphics()
 {
+	OutputDebugString(L"~Graphics()析构\n");
 	if (m_d3dDevice != nullptr)
 	{
 		m_d3dDevice->Release();
@@ -87,8 +89,12 @@ void Graphics::Render()
 	m_d3dDevice->BeginScene();
 	//-----------------------------
 	wchar_t g_strFPS[50] = { 0 };
-	int charCount = wsprintf(g_strFPS, L"FPS:%0.2f", Getfps());
-	m_d3dFont->DrawText(NULL, g_strFPS, charCount, &wnd.wcRect, DT_TOP | DT_RIGHT, D3DCOLOR_XRGB(255, 39, 136));
+	int charCount = swprintf_s(g_strFPS, 20, TEXT("FPS:%0.2f (%d,%d)"), Getfps(), wnd.pt.x, wnd.pt.y);
+	RECT r = { 300,100,500,300 };
+	RECT formatRect;
+	GetClientRect(wnd.mHwnd, &formatRect);
+	RECT tR = wnd.wcRect;
+	m_d3dFont->DrawText(NULL, g_strFPS, charCount, &formatRect, DT_TOP | DT_LEFT, D3DCOLOR_XRGB(255, 39, 136));
 
 	//-----------------------------
 	m_d3dDevice->EndScene();

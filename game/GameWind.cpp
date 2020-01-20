@@ -1,13 +1,14 @@
 #include "GameWind.h"
 
 const wchar_t* GameWind::wndClassName = L"Game v1.0";
-
+POINT GameWind::pt = {0,0};
 /*+---------------------------------------------------
  *| 创建窗口
  *+---------------------------------------------------
  */
 GameWind::GameWind(HINSTANCE hInstacne, int width, int height):mhInstance(hInstacne),mWidth(width),mHeight(height)
 {
+	OutputDebugString(L"GameWind()构造\n");
 	//1、对象
 	WNDCLASS wc;
 	wc.cbClsExtra = 0;										//类额外的内存，通常为零
@@ -56,9 +57,19 @@ GameWind::GameWind(HINSTANCE hInstacne, int width, int height):mhInstance(hInsta
 	UpdateWindow(mHwnd);
 }
 
+GameWind::GameWind(const GameWind& wnd)
+{
+	OutputDebugString(L"GameWind()拷贝构造\n");
+	mHwnd = wnd.mHwnd;
+	mhInstance = wnd.mhInstance;
+	mWidth = wnd.mWidth;
+	mHeight = wnd.mHeight;
+	wcRect = wnd.wcRect;
+}
+
 GameWind::~GameWind()
 {
-
+	OutputDebugString(L"~GameWind()析构\n");
 }
 /**
  * 处理系统消息
@@ -86,7 +97,7 @@ void GameWind::ShowMessageBox(const wchar_t* title, const wchar_t* msg)
 //窗口消息处理回调
 LRESULT CALLBACK GameWind::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	POINT pt;
+
 	TCHAR buf[1024];
 	HDC hdc;
 	INT index = 0;
@@ -117,11 +128,11 @@ LRESULT CALLBACK GameWind::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 		pt.y = HIWORD(lParam); //取得y的坐标
 
 		//填充数据
-		wsprintf(buf, TEXT("%d,%d"), pt.x, pt.y);
-		hdc = GetDC(hwnd);
+		//wsprintf(buf, TEXT("%d,%d"), pt.x, pt.y);
+		//hdc = GetDC(hwnd);
 		//输出字符串
-		TextOut(hdc, 0, 0, buf, lstrlen(buf));
-		ReleaseDC(hwnd, hdc);
+		//TextOut(hdc, 0, 0, buf, lstrlen(buf));
+		//ReleaseDC(hwnd, hdc);
 
 		break;
 	}

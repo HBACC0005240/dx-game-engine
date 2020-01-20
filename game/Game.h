@@ -6,7 +6,7 @@ private:
 	GameWind& wnd;
 	Graphics gfx;
 public:
-	Game(GameWind wmd);
+	Game(GameWind& wmd);
 	~Game();
 
 	void Run();

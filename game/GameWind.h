@@ -10,6 +10,7 @@ class GameWind{
 public:
     HWND mHwnd;
     RECT wcRect;
+    static POINT pt;
 private:
     int mWidth;
     int mHeight;
@@ -17,6 +18,7 @@ private:
     static const wchar_t* wndClassName;
 public:
     GameWind(HINSTANCE hInstacne, int width, int height);
+    GameWind(const GameWind& wnd);
     ~GameWind();
 
     bool ProcessMessage();
