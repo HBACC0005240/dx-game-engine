@@ -1,4 +1,7 @@
 #pragma once
+#define _FILE _CRT_WIDE(__FILE__)
+#define _LINE __LINE__
+
 namespace AHLIN {
 
 	class Exception {

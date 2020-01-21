@@ -1,7 +1,11 @@
-#include "GameWind.h"
 #include "Graphics.h"
-#include <tchar.h> //swprintf_s
+#include "DrawPoint.h"
+#include "DrawLine.h"
+//对象
+DrawPoint* g_point;
+DrawLine* g_line;
 
+//初始化
 Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	OutputDebugString(L"Graphics()构造\n");
 	InitD3D();
@@ -9,7 +13,6 @@ Graphics::Graphics(GameWind& wnd):wnd(wnd){
 
 Graphics::~Graphics()
 {
-	OutputDebugString(L"~Graphics()析构\n");
 	if (m_d3dDevice != nullptr)
 	{
 		m_d3dDevice->Release();
@@ -19,6 +22,17 @@ Graphics::~Graphics()
 	{
 		m_d3d9->Release();
 	}
+
+	if (g_point != nullptr)
+	{
+		delete g_point;
+	}
+
+	if (g_line != nullptr)
+	{
+		delete g_line;
+	}
+	OutputDebugString(L"~Graphics()析构\n");
 }
 
 HRESULT Graphics::InitD3D()
@@ -69,6 +83,19 @@ HRESULT Graphics::InitD3D()
 	return S_OK;
 }
 
+HRESULT Graphics::InitVertex()
+{
+	//点
+	g_point = new DrawPoint(*this);
+	g_point->CreateVectex();
+
+	//线
+	g_line = new DrawLine(*this);
+	g_line->CreateVectex();
+
+	return S_OK;
+}
+
 void Graphics::Render()
 {
 
@@ -82,6 +109,11 @@ void Graphics::Render()
 	GetClientRect(wnd.mHwnd, &formatRect);
 	m_d3dFont->DrawText(NULL, g_strFPS, charCount, &formatRect, DT_TOP | DT_LEFT, D3DCOLOR_XRGB(255, 39, 136));
 
+	//画点列表
+	g_point->Draw();
+
+	//画线列表
+	g_line->Draw();
 	//-----------------------------
 	m_d3dDevice->EndScene();
 

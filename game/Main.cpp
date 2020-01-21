@@ -11,6 +11,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			//throw AHLIN::Exception(L"文件", 10,L"aaa");
 			Game game(wnd);
+			//初始化
+			game.Init();
+
+			//处理系统消息
 			while (wnd.ProcessMessage())
 			{
 				//处理游戏循环逻辑

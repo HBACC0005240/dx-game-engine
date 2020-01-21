@@ -27,6 +27,12 @@
     <ClCompile Include="Graphics.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="DrawPoint.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawLine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameWind.h">
@@ -42,6 +48,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Graphics.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawPoint.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawLine.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

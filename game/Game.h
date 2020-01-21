@@ -8,6 +8,6 @@ private:
 public:
 	Game(GameWind& wmd);
 	~Game();
-
+	void Init();
 	void Run();
 };

@@ -144,6 +144,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DrawLine.cpp" />
+    <ClCompile Include="DrawPoint.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameWind.cpp" />
     <ClCompile Include="Graphics.cpp" />
@@ -151,6 +153,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h" />
+    <ClInclude Include="DrawLine.h" />
+    <ClInclude Include="DrawPoint.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameWind.h" />
