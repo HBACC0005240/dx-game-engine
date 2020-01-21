@@ -15,7 +15,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			{
 				//处理游戏循环逻辑
 				game.Run();
+				//显示窗口
+				//wnd.ShowWind();
 			}
+
 		}
 		catch (const AHLIN::Exception &e)
 		{

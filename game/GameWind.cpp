@@ -6,7 +6,12 @@ POINT GameWind::pt = {0,0};
  *| 创建窗口
  *+---------------------------------------------------
  */
-GameWind::GameWind(HINSTANCE hInstacne, int width, int height):mhInstance(hInstacne),mWidth(width),mHeight(height)
+GameWind::GameWind(HINSTANCE hInstacne, int width, int height)
+	:
+	mhInstance(hInstacne),
+	mWidth(width),
+	mHeight(height),
+	isShow(false)
 {
 	OutputDebugString(L"GameWind()构造\n");
 	//1、对象
@@ -52,8 +57,7 @@ GameWind::GameWind(HINSTANCE hInstacne, int width, int height):mhInstance(hInsta
 	}
 
 	//5、显示和更新
-	ShowWindow(mHwnd, SW_SHOWNORMAL);
-
+	ShowWindow(mHwnd, SW_SHOWDEFAULT);
 	UpdateWindow(mHwnd);
 }
 
@@ -70,6 +74,18 @@ GameWind::GameWind(const GameWind& wnd)
 GameWind::~GameWind()
 {
 	OutputDebugString(L"~GameWind()析构\n");
+	UnregisterClass(wndClassName, mhInstance);
+}
+
+void GameWind::ShowWind()
+{
+	isShow = IsWindowVisible(mHwnd);
+	if ( ! isShow)
+	{
+		//5、显示和更新
+		ShowWindow(mHwnd, SW_SHOWDEFAULT);
+		UpdateWindow(mHwnd);
+	}
 }
 /**
  * 处理系统消息
@@ -99,9 +115,6 @@ LRESULT CALLBACK GameWind::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 {
 
 	TCHAR buf[1024];
-	HDC hdc;
-	INT index = 0;
-
 	switch (uMsg)
 	{
 	case WM_CLOSE:
@@ -126,18 +139,6 @@ LRESULT CALLBACK GameWind::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 	{
 		pt.x = LOWORD(lParam); //取得x的坐标
 		pt.y = HIWORD(lParam); //取得y的坐标
-
-		//填充数据
-		//wsprintf(buf, TEXT("%d,%d"), pt.x, pt.y);
-		//hdc = GetDC(hwnd);
-		//输出字符串
-		//TextOut(hdc, 0, 0, buf, lstrlen(buf));
-		//ReleaseDC(hwnd, hdc);
-
-		break;
-	}
-	case WM_PAINT:     
-	{
 		break;
 	}
 	default:

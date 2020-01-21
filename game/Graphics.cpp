@@ -62,21 +62,9 @@ HRESULT Graphics::InitD3D()
 		return E_FAIL;
 	}
 
-	///检测是否支持颜色格式转换
-	HRESULT hr = m_d3d9->CheckDeviceFormatConversion(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_P8, D3DFMT_A8B8G8R8);
-	if (FAILED(hr)) {
-	}
-
-	///检测显卡是否支持
-	hr = m_d3d9->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, d3ddm.Format, 0, D3DRTYPE_TEXTURE, D3DFMT_P8);
-	if (FAILED(hr)) {
-	}
-
 	if (FAILED(D3DXCreateFont(m_d3dDevice, 24, 0, 0, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, 0, L"微软雅黑", &m_d3dFont))) {
 		return E_FAIL;
 	}
-
-	srand(timeGetTime());
 
 	return S_OK;
 }

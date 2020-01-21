@@ -12,6 +12,7 @@ public:
     RECT wcRect;
     static POINT pt;
 private:
+    bool isShow;
     int mWidth;
     int mHeight;
     HINSTANCE mhInstance = nullptr;
@@ -20,7 +21,7 @@ public:
     GameWind(HINSTANCE hInstacne, int width, int height);
     GameWind(const GameWind& wnd);
     ~GameWind();
-
+    void ShowWind();
     bool ProcessMessage();
     void ShowMessageBox(const wchar_t* title, const wchar_t* msg);
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
