@@ -22,5 +22,6 @@ void Game::Init()
 
 void Game::Run()
 {
+	GetClientRect(wnd.mHwnd, &wnd.clientRect);
 	gfx.Render();
 }

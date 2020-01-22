@@ -144,17 +144,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DrawGText.cpp" />
     <ClCompile Include="DrawLine.cpp" />
     <ClCompile Include="DrawPoint.cpp" />
+    <ClCompile Include="DrawTriangle.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameWind.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="DrawLine.h" />
     <ClInclude Include="DrawPoint.h" />
+    <ClInclude Include="DrawGText.h" />
+    <ClInclude Include="DrawTriangle.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameWind.h" />

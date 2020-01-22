@@ -1,14 +1,27 @@
 #include "Graphics.h"
-#include "DrawPoint.h"
-#include "DrawLine.h"
-//对象
-DrawPoint* g_point;
-DrawLine* g_line;
 
 //初始化
 Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	OutputDebugString(L"Graphics()构造\n");
 	InitD3D();
+
+	//初始化摄影机
+	g_camera = new Camera(m_d3dDevice);
+
+	//点
+	g_point = new DrawPoint(m_d3dDevice);
+
+	//线
+	g_line = new DrawLine(m_d3dDevice);
+
+	//初始化字体类
+	g_text = new DrawGText(m_d3dFont);
+
+	//初始化
+	g_triangle = new DrawTriangle(m_d3dDevice);
+
+	//初始化
+	g_3dtriangle = new DrawTriangle(m_d3dDevice);
 }
 
 Graphics::~Graphics()
@@ -23,15 +36,13 @@ Graphics::~Graphics()
 		m_d3d9->Release();
 	}
 
-	if (g_point != nullptr)
-	{
-		delete g_point;
-	}
+	delete g_point;
+	delete g_line;
+	delete g_camera;
+	delete g_text;
+	delete g_triangle;
+	delete g_3dtriangle;
 
-	if (g_line != nullptr)
-	{
-		delete g_line;
-	}
 	OutputDebugString(L"~Graphics()析构\n");
 }
 
@@ -68,15 +79,15 @@ HRESULT Graphics::InitD3D()
 	d3dpp.Windowed = TRUE;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;
-	d3dpp.EnableAutoDepthStencil = TRUE;//自动维护深度缓存
-	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;//深度缓存像素格式[clear时清除ZBUFFER]
+	//d3dpp.EnableAutoDepthStencil = TRUE;//自动维护深度缓存
+	//d3dpp.AutoDepthStencilFormat = D3DFMT_D16;//深度缓存像素格式[clear时清除ZBUFFER] D3DCLEAR_ZBUFFER
 
 	//创建device设备
 	if (FAILED(m_d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, wnd.mHwnd, vp, &d3dpp, &m_d3dDevice))) {
 		return E_FAIL;
 	}
 
-	if (FAILED(D3DXCreateFont(m_d3dDevice, 24, 0, 0, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, 0, L"微软雅黑", &m_d3dFont))) {
+	if (FAILED(D3DXCreateFont(m_d3dDevice, 20, 0, 0, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, 0, L"微软雅黑", &m_d3dFont))) {
 		return E_FAIL;
 	}
 
@@ -85,13 +96,17 @@ HRESULT Graphics::InitD3D()
 
 HRESULT Graphics::InitVertex()
 {
-	//点
-	g_point = new DrawPoint(*this);
+	//创建顶点缓存
 	g_point->CreateVectex();
 
-	//线
-	g_line = new DrawLine(*this);
+	//创建顶点缓存
 	g_line->CreateVectex();
+
+	//创建三角形顶点缓存
+	g_triangle->CreateVectex();
+
+	//创建3D三角形
+	g_3dtriangle->Create3DVectex();
 
 	return S_OK;
 }
@@ -103,17 +118,30 @@ void Graphics::Render()
 
 	m_d3dDevice->BeginScene();
 	//-----------------------------
-	wchar_t g_strFPS[50] = { 0 };
-	int charCount = swprintf_s(g_strFPS, 20, TEXT("FPS:%0.2f (%d,%d)"), Getfps(), wnd.pt.x, wnd.pt.y);
-	RECT formatRect;
-	GetClientRect(wnd.mHwnd, &formatRect);
-	m_d3dFont->DrawText(NULL, g_strFPS, charCount, &formatRect, DT_TOP | DT_LEFT, D3DCOLOR_XRGB(255, 39, 136));
+
+	//视图
+	g_camera->SetMatrices();
+
+	//绘制FPS
+	g_text->DrawFps(Getfps(),&wnd.clientRect,0xffffffff);
+
+	//绘制鼠标
+	wchar_t pos[50] = {0};
+	wsprintf(pos, L"坐标：[%d,%d]", wnd.pt.x, wnd.pt.y);
+	g_text->Draw(pos, 0, 20, 800, 600, 0x88ffffff);
 
 	//画点列表
 	g_point->Draw();
 
 	//画线列表
 	g_line->Draw();
+
+	//画三角形
+	g_triangle->Draw();
+
+	//画3d三角形
+	g_3dtriangle->Draw3D();
+
 	//-----------------------------
 	m_d3dDevice->EndScene();
 

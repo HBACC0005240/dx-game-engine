@@ -10,10 +10,11 @@ class GameWind{
 public:
     HWND mHwnd;
     RECT wcRect;
+    RECT clientRect;//客户去矩形
     static POINT pt;
 private:
-    bool isShow;
     int mWidth;
+    bool isShow;
     int mHeight;
     HINSTANCE mhInstance = nullptr;
     static const wchar_t* wndClassName;

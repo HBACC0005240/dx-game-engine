@@ -11,7 +11,9 @@ GameWind::GameWind(HINSTANCE hInstacne, int width, int height)
 	mhInstance(hInstacne),
 	mWidth(width),
 	mHeight(height),
-	isShow(false)
+	isShow(false),
+	wcRect({0}),
+	clientRect({0})
 {
 	OutputDebugString(L"GameWind()构造\n");
 	//1、对象
@@ -55,6 +57,8 @@ GameWind::GameWind(HINSTANCE hInstacne, int width, int height)
 	{
 		throw AHLIN::Exception(_FILE,_LINE,L"窗口创建失败！");
 	}
+
+	GetClientRect(mHwnd, &clientRect);
 
 	//5、显示和更新
 	ShowWindow(mHwnd, SW_SHOWDEFAULT);
