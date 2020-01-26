@@ -1,11 +1,11 @@
 #include "GameWind.h"
 #include "Graphics.h"
 #include "Game.h"
+#include <vector>
 
 Game::Game(GameWind& wnd):wnd(wnd),gfx(wnd)
 {
 	OutputDebugString(L"Game()ππ‘Ï\n");
-
 }
 
 Game::~Game()
@@ -23,5 +23,6 @@ void Game::Init()
 void Game::Run()
 {
 	GetClientRect(wnd.mHwnd, &wnd.clientRect);
+	GTime::run();
 	gfx.Render();
 }

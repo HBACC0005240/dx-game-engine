@@ -6,6 +6,8 @@
 #include "DrawLine.h"
 #include "DrawGText.h"
 #include "DrawTriangle.h"
+#include "GWzlData.h"
+#include "GPlayer.h"
 
 class Graphics {
 private:
@@ -19,6 +21,8 @@ public:
 	DrawGText* g_text;//文字对象
 	DrawTriangle* g_triangle;//三角形对象
 	DrawTriangle* g_3dtriangle;//三角形对象
+	GWzlData* pWzlHum;
+	GPlayer* g_player;
 public:
 	LPDIRECT3DDEVICE9 m_d3dDevice;//设备对象
 	Graphics(GameWind &wnd);

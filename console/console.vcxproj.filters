@@ -18,5 +18,16 @@
     <ClCompile Include="console.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="类中声明类.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="类依赖构造.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="类中声明类.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -22,6 +22,13 @@ Graphics::Graphics(GameWind& wnd):wnd(wnd){
 
 	//初始化
 	g_3dtriangle = new DrawTriangle(m_d3dDevice);
+
+	//加载人物图片
+	char file[] = ".\\Data\\hum";
+	//char file[] = ".\\Data\\items";
+	pWzlHum = new GWzlData(file);
+
+	g_player = new GPlayer(pWzlHum, 0, 0, m_d3dDevice);
 }
 
 Graphics::~Graphics()
@@ -43,6 +50,8 @@ Graphics::~Graphics()
 	delete g_triangle;
 	delete g_3dtriangle;
 
+	delete pWzlHum;
+	delete g_player;
 	OutputDebugString(L"~Graphics()析构\n");
 }
 
@@ -108,6 +117,9 @@ HRESULT Graphics::InitVertex()
 	//创建3D三角形
 	g_3dtriangle->Create3DVectex();
 
+	//加载图片
+	g_player->Load(RUN,RIGHT_DOWN);
+
 	return S_OK;
 }
 
@@ -129,6 +141,10 @@ void Graphics::Render()
 	wchar_t pos[50] = {0};
 	wsprintf(pos, L"坐标：[%d,%d]", wnd.pt.x, wnd.pt.y);
 	g_text->Draw(pos, 0, 20, 800, 600, 0x88ffffff);
+	
+	//绘制时间
+	wsprintf(pos, L"time：[%d]", GTime::s_tNowTime);
+	g_text->Draw(pos, 0, 40, 800, 600, 0x88ffffff);
 
 	//画点列表
 	g_point->Draw();
@@ -140,7 +156,10 @@ void Graphics::Render()
 	g_triangle->Draw();
 
 	//画3d三角形
-	g_3dtriangle->Draw3D();
+	//g_3dtriangle->Draw3D();
+
+	//绘制人物
+	g_player->Show();
 
 	//-----------------------------
 	m_d3dDevice->EndScene();

@@ -13,66 +13,111 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\Core">
+      <UniqueIdentifier>{586f9e96-09f2-41bd-9280-19d1359ea236}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Core">
+      <UniqueIdentifier>{9eb8f505-1be5-4443-89ab-44e3e86379d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Game">
+      <UniqueIdentifier>{e3739a82-c1eb-4b31-8880-bccd58a1869c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Game">
+      <UniqueIdentifier>{f0dca156-c932-4980-9020-f06423a85b83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="GameWind.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="DrawPoint.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="DrawLine.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="DrawTriangle.cpp">
+      <Filter>源文件\Core</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Core</Filter>
     </ClCompile>
     <ClCompile Include="DrawGText.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Core</Filter>
     </ClCompile>
-    <ClCompile Include="DrawTriangle.cpp">
+    <ClCompile Include="DrawLine.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawPoint.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GameWind.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GWzlData.cpp">
+      <Filter>源文件\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GWzlDraw.cpp">
+      <Filter>源文件\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GWzxData.cpp">
+      <Filter>源文件\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GPlayer.cpp">
+      <Filter>源文件\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GTime.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameWind.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Exception.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="Camera.h">
+      <Filter>头文件\Core</Filter>
     </ClInclude>
     <ClInclude Include="Core.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphics.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawPoint.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawLine.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Core</Filter>
     </ClInclude>
     <ClInclude Include="DrawGText.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawLine.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawPoint.h">
+      <Filter>头文件\Core</Filter>
     </ClInclude>
     <ClInclude Include="DrawTriangle.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GameWind.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GWzlData.h">
+      <Filter>头文件\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GWzxData.h">
+      <Filter>头文件\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GWzlOffset.h">
+      <Filter>头文件\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GWzlDraw.h">
+      <Filter>头文件\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GPlayer.h">
+      <Filter>头文件\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GTime.h">
+      <Filter>头文件\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

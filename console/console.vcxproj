@@ -148,6 +148,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="console.cpp" />
+    <ClCompile Include="类中声明类.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="类中声明类.h" />
+    <ClInclude Include="类依赖构造.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
