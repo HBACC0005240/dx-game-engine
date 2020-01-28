@@ -2,14 +2,14 @@
 #include "Core.h"
 
 //顶点格式
-#define D3DFVF_VERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE)
+#define D3DFVF_VERTEX (D3DFVF_XYZ|D3DFVF_DIFFUSE)
 
 class DrawLine {
 private:
 	//顶点结构
 	struct VertexLine
 	{
-		float x, y, z, rhw;
+		float x, y, z;
 		DWORD color;
 	};
 	LPDIRECT3DDEVICE9 p_d3dDevice;

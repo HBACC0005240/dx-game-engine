@@ -119,7 +119,7 @@ HRESULT Graphics::InitVertex()
 	//g_3dtriangle->setIndices();
 
 	//加载图片
-	g_player->Load(RUN,DOWN);
+	g_player->Load(STAND,DOWN);
 
 	return S_OK;
 }
@@ -162,8 +162,10 @@ void Graphics::Render()
 
 
 	//画3d三角形
-	g_3dtriangle->Draw3D();
+	//g_3dtriangle->Draw3D();
 	//g_3dtriangle->DrawIndex3D();
+
+	//KeyDown();
 
 	//绘制人物
 	g_player->Show();
@@ -174,7 +176,7 @@ void Graphics::Render()
 
 	m_d3dDevice->SetTexture(0, NULL);
 
-
+	
 	//绘制时间
 	wsprintf(pos, L"人物状态：s:%d,f:%d", g_player->mState, g_player->mFrame);
 	g_text->Draw(pos, 0, 60, 800, 600, 0x88ffffff);
@@ -199,4 +201,71 @@ float Graphics::Getfps()
 		frameCount = 0;
 	}
 	return fps;
+}
+
+HUM_STATE tState = STAND;
+DIRECTION tDir = UP;
+void Graphics::KeyDown()
+{
+	///若数字键1被按下，进行线框填充WE
+	if (::GetAsyncKeyState(0x57) & 0x8000f) {
+		switch (tState)
+		{
+		case STAND:
+			tState = WALK;
+			break;
+		case WALK:
+			tState = RUN;
+			break;
+		case RUN:
+			tState = BATTLE_POS;
+			break;
+		case BATTLE_POS:
+			tState = ATTACK;
+			break;
+		case ATTACK:
+			tState = STAND;
+			break;
+		default:
+			break;
+		}
+		g_player->Load(tState, tDir);
+		g_player->mFrame = 0;
+	}
+
+	if (::GetAsyncKeyState(0x45) & 0x8000f) {
+		switch (tDir)
+		{
+		case UP:
+			tDir = RIGHT_UP;
+			break;
+		case RIGHT_UP:
+			tDir = RIGHT;
+			break;
+		case RIGHT:
+			tDir = RIGHT_DOWN;
+			break;
+		case RIGHT_DOWN:
+			tDir = DOWN;
+			break;
+		case DOWN:
+			tDir = LEFT_DOWN;
+			break;
+		case LEFT_DOWN:
+			tDir = LEFT;
+			break;
+		case LEFT:
+			tDir = LEFT_UP;
+			break;
+		case LEFT_UP:
+			tDir = UP;
+			break;
+		default:
+			break;
+		}
+		g_player->mFrame = 0;
+		g_player->Load(tState, tDir);
+	}
+
+
 }

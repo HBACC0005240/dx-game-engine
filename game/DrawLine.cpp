@@ -17,11 +17,13 @@ DrawLine::~DrawLine()
 HRESULT DrawLine::CreateVectex()
 {
 	//¶¥µã
+	DWORD color1 = 0xffffffff;
+	DWORD color2 = 0xff00ff00;
 	VertexLine vertex[] = {
-		{200.0f, 100.0f, 1.0f, 1.0f, 0x00ff00ff},
-		{200.0f, 200.0f, 1.0f, 1.0f, 0x00ff2255},
-		{300.0f, 300.0f, 0.5f, 1.0f, 0x22ff6688},
-		{400.0f, 200.0f, 0.5f, 1.0f, 0x00ffffff}
+		{-100.0f, 0.0f, 0.0f,  color1},
+		{ 100.0f, 0.0f, 0.0f,  color1},
+		{ 0.0f,  100.0f, 0.0f, color2},
+		{ 0.0f, -100.0f, 0.0f, color2}
 	};
 
 	if (FAILED(p_d3dDevice->CreateVertexBuffer(sizeof(vertex), 0, D3DFVF_VERTEX, D3DPOOL_DEFAULT, &g_pVB, NULL))) {

@@ -26,6 +26,8 @@ void GWzlData::Load(HUM_STATE state, DIRECTION dir,int frame,GWzlDraw * pDraw)
 	//读取wzl
 	fopen_s(&fp, m_WzlFile, "r+b");
 	if (fp == NULL) {
+		OutputDebugString(TEXT("打开文件失败了\n"));
+		fclose(fp);
 		return;
 	}
 
@@ -34,6 +36,8 @@ void GWzlData::Load(HUM_STATE state, DIRECTION dir,int frame,GWzlDraw * pDraw)
 	pWzx->GetOneOffset(state, dir, frame, &offset);
 	if (offset == 0)
 	{
+		OutputDebugString(TEXT("偏移为0，不加载！\n"));
+		fclose(fp);
 		return;
 	}
 	//指向图片结构体头部位置

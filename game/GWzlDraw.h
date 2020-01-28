@@ -10,6 +10,13 @@ struct GTextureVertex
 	static const DWORD FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1;
 };
 
+struct GTextureVertexRHW
+{
+	float x, y, z, rhw;
+	float nx, ny, nz;
+	float u, v;
+	static const DWORD FVF = D3DFVF_XYZRHW | D3DFVF_NORMAL | D3DFVF_TEX1;
+};
 
 class GWzlDraw {
 public:
@@ -287,6 +294,8 @@ public:
 	GWzlDraw();
 	~GWzlDraw();
 	HRESULT CreateVectex(LPDIRECT3DDEVICE9 d3dDevice);
+	HRESULT CreateVectexRHW(LPDIRECT3DDEVICE9 d3dDevice);
 	void Draw(LPDIRECT3DDEVICE9 d3dDevice);
 	void DrawTexture(LPDIRECT3DDEVICE9 d3dDevice);
+	void DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice);
 };
