@@ -6,16 +6,18 @@
  *+-------------------------------------------------
  */
 
+
 class GameWind{
 public:
     HWND mHwnd;
     RECT wcRect;
     RECT clientRect;//客户去矩形
     static POINT pt;
+    bool (*KeyDown)(int);
+    float mWidth;
+    float mHeight;
 private:
-    int mWidth;
     bool isShow;
-    int mHeight;
     HINSTANCE mhInstance = nullptr;
     static const wchar_t* wndClassName;
 public:
@@ -26,6 +28,6 @@ public:
     bool ProcessMessage();
     void ShowMessageBox(const wchar_t* title, const wchar_t* msg);
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 };
 
+GameWind* CALL windCreate(HINSTANCE hInstance, int width, int hegiht);

@@ -8,14 +8,14 @@ using namespace std;
 
 
 
-int main()
+int _main()
 {
     //A a(10);
     //B b(a);
     //b.run();
 
-    Person person;
-    person.init();
+    //Person person;
+    //person.init();
 
-
+    return 0;
 }

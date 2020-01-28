@@ -116,9 +116,10 @@ HRESULT Graphics::InitVertex()
 
 	//创建3D三角形
 	g_3dtriangle->Create3DVectex();
+	//g_3dtriangle->setIndices();
 
 	//加载图片
-	g_player->Load(RUN,RIGHT_DOWN);
+	g_player->Load(RUN,DOWN);
 
 	return S_OK;
 }
@@ -132,8 +133,8 @@ void Graphics::Render()
 	//-----------------------------
 
 	//视图
-	g_camera->SetMatrices();
-
+	g_camera->SetMatrices(wnd.mWidth,wnd.mHeight);
+	g_camera->SetTransform(GTime::GetCountDown());
 	//绘制FPS
 	g_text->DrawFps(Getfps(),&wnd.clientRect,0xffffffff);
 
@@ -143,8 +144,12 @@ void Graphics::Render()
 	g_text->Draw(pos, 0, 20, 800, 600, 0x88ffffff);
 	
 	//绘制时间
-	wsprintf(pos, L"time：[%d]", GTime::s_tNowTime);
+	wsprintf(pos, L"time：[%d]-[%d]", GTime::s_tNowTime,GTime::s_tPrevTime);
 	g_text->Draw(pos, 0, 40, 800, 600, 0x88ffffff);
+
+	//屏幕宽高
+	wsprintf(pos, L"wh：[%d,%d]", static_cast<int>(wnd.mWidth), static_cast<int>(wnd.mHeight));
+	g_text->Draw(pos, 0, 80, 800, 600, 0x88ffffff);
 
 	//画点列表
 	g_point->Draw();
@@ -155,12 +160,24 @@ void Graphics::Render()
 	//画三角形
 	g_triangle->Draw();
 
+
 	//画3d三角形
-	//g_3dtriangle->Draw3D();
+	g_3dtriangle->Draw3D();
+	//g_3dtriangle->DrawIndex3D();
 
 	//绘制人物
 	g_player->Show();
 
+	D3DXMATRIX matWorld;
+	D3DXMatrixIdentity(&matWorld);
+	m_d3dDevice->SetTransform(D3DTS_WORLD, &matWorld);
+
+	m_d3dDevice->SetTexture(0, NULL);
+
+
+	//绘制时间
+	wsprintf(pos, L"人物状态：s:%d,f:%d", g_player->mState, g_player->mFrame);
+	g_text->Draw(pos, 0, 60, 800, 600, 0x88ffffff);
 	//-----------------------------
 	m_d3dDevice->EndScene();
 

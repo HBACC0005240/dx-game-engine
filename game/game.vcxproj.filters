@@ -67,7 +67,7 @@
       <Filter>源文件\Game</Filter>
     </ClCompile>
     <ClCompile Include="GTime.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

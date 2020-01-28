@@ -25,4 +25,13 @@ void Game::Run()
 	GetClientRect(wnd.mHwnd, &wnd.clientRect);
 	GTime::run();
 	gfx.Render();
+	GTime::over();
+}
+
+bool Game::KeyDown(int key)
+{
+	wchar_t buf[50];
+	swprintf_s(buf, TEXT("°´¼ü£º%c"), key);
+	OutputDebugString(buf);
+	return false;
 }

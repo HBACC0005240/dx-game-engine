@@ -50,7 +50,6 @@ HRESULT DrawTriangle::CreateVectex()
 
 HRESULT DrawTriangle::Create3DVectex()
 {
-    // Initialize three Vertices for rendering a triangle
     Vertex3DTriangle Vertices[] =
     {
         { -1.0f,-1.0f, 0.0f, 0xffff0000, },
@@ -59,27 +58,19 @@ HRESULT DrawTriangle::Create3DVectex()
         {  0.0f, -1.0f, -1.0f, 0xffffffff, },
     };
 
-    // Create the vertex buffer. Here we are allocating enough memory
-    // (from the default pool) to hold all our 3 custom Vertices. We also
-    // specify the FVF, so the vertex buffer knows what data it contains.
     if (FAILED(p_d3dDevice->CreateVertexBuffer(sizeof(Vertices), 0, D3DFVF_3D_TRIANGLE, D3DPOOL_DEFAULT, &g_pVB, NULL)))
     {
         return E_FAIL;
     }
 
-    // Now we fill the vertex buffer. To do this, we need to Lock() the VB to
-    // gain access to the Vertices. This mechanism is required becuase vertex
-    // buffers may be in device memory.
     VOID* pVertices;
     if (FAILED(g_pVB->Lock(0, sizeof(Vertices), &pVertices, 0)))
         return E_FAIL;
     memcpy(pVertices, Vertices, sizeof(Vertices));
     g_pVB->Unlock();
 
-    // Turn off culling, so we see the front and back of the triangle
     p_d3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-    // Turn off D3D lighting, since we are providing our own vertex colors
     p_d3dDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
     return S_OK;

@@ -2,6 +2,18 @@
 
 const wchar_t* GameWind::wndClassName = L"Game v2.0";
 POINT GameWind::pt = {0,0};
+
+GameWind* gWnd;
+
+GameWind* windCreate(HINSTANCE hInstance,int width,int hegiht) {
+	if ( !gWnd)
+	{
+		gWnd = new GameWind(hInstance, width, hegiht);
+		return gWnd;
+	}
+	return gWnd;
+}
+
 /*+---------------------------------------------------
  *| 创建窗口
  *+---------------------------------------------------
@@ -127,6 +139,17 @@ LRESULT CALLBACK GameWind::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 	case WM_DESTROY:
 		PostQuitMessage(0);                  //发送退出消息
 		break;
+	case WM_SIZE:
+	{
+		if (gWnd)
+		{
+			float width = LOWORD(lParam);
+			float height = HIWORD(lParam);
+			gWnd->mWidth = width;
+			gWnd->mHeight = height;
+		}
+		break;
+	}
 	case WM_LBUTTONDOWN:                      //鼠标左键按下消息
 	{
 		pt.x = LOWORD(lParam);
@@ -137,6 +160,7 @@ LRESULT CALLBACK GameWind::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 	{
 		wsprintf(buf, L"键盘按下:%c\n", wParam);
 		OutputDebugString(buf);
+		gWnd->KeyDown((int)wParam);
 		break;
 	}
 	case WM_MOUSEMOVE:

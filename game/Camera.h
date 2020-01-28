@@ -8,5 +8,7 @@ public:
 	~Camera();
 
 	//ÉèÖÃ±ä»»
-	void SetMatrices();
+	void SetMatrices(float width, float height);
+	//Ğı×ª
+	void SetTransform(float timeDelta);
 };

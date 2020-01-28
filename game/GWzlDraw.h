@@ -2,6 +2,15 @@
 #include "Core.h"
 #include "GWzlOffset.h"
 
+struct GTextureVertex
+{
+	float x, y, z;
+	float nx, ny, nz;
+	float u, v;
+	static const DWORD FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1;
+};
+
+
 class GWzlDraw {
 public:
 	WzlImage sImage;
@@ -11,6 +20,9 @@ public:
 	int frame;//当前帧数
 	IDirect3DSurface9* m_d3dSurface = nullptr;
 	D3DSURFACE_DESC m_d3dSurfaceDesc;
+
+	IDirect3DVertexBuffer9* m_d3dBuffer;
+
 private:
 	//8位图 256调色板
 	PALETTEENTRY m_color[256] = {
@@ -274,6 +286,7 @@ private:
 public:
 	GWzlDraw();
 	~GWzlDraw();
-
+	HRESULT CreateVectex(LPDIRECT3DDEVICE9 d3dDevice);
 	void Draw(LPDIRECT3DDEVICE9 d3dDevice);
+	void DrawTexture(LPDIRECT3DDEVICE9 d3dDevice);
 };

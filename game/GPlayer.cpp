@@ -33,8 +33,8 @@ void GPlayer::Show()
 		mFrame = 0;
 	}
 
-	mDraw[mFrame].Draw(p_d3dDevice);
-	if (time.CountDown(150))
+	mDraw[mFrame].DrawTexture(p_d3dDevice);
+	if (time.CountDown(1000))
 	{
 		mFrame++;
 		if (mFrame >= 8){

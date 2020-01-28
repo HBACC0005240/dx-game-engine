@@ -21,6 +21,9 @@
     <ClCompile Include="类中声明类.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="继承多态.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="类依赖构造.h">

@@ -11,3 +11,6 @@
 #pragma comment(lib,"winmm.lib") //timeGetTime()
 
 #include "GTime.h"
+
+
+#define CALL  __stdcall

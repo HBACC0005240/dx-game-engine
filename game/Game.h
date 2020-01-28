@@ -10,4 +10,5 @@ public:
 	~Game();
 	void Init();
 	void Run();
+	bool KeyDown(int key);
 };
