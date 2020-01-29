@@ -5,7 +5,7 @@ POINT GameWind::pt = {0,0};
 
 GameWind* gWnd;
 
-GameWind* windCreate(HINSTANCE hInstance,int width,int hegiht) {
+GameWind* windCreate(HINSTANCE hInstance,float width, float hegiht) {
 	if ( !gWnd)
 	{
 		gWnd = new GameWind(hInstance, width, hegiht);
@@ -18,7 +18,7 @@ GameWind* windCreate(HINSTANCE hInstance,int width,int hegiht) {
  *| 创建窗口
  *+---------------------------------------------------
  */
-GameWind::GameWind(HINSTANCE hInstacne, int width, int height)
+GameWind::GameWind(HINSTANCE hInstacne, float width, float height)
 	:
 	mhInstance(hInstacne),
 	mWidth(width),
@@ -46,8 +46,8 @@ GameWind::GameWind(HINSTANCE hInstacne, int width, int height)
 
 	//3、计算客户区大小
 	wcRect = { 0,0,0,0 };
-	int mX = 350, mY = 100;
-	SetRect(&wcRect, mX, mY, mWidth + mX, mHeight + mY);
+	int mX = 100, mY = 100;
+	SetRect(&wcRect, mX, mY, static_cast<int>(mWidth) + mX, static_cast<int>(mHeight) + mY);
 	AdjustWindowRect(&wcRect, WS_OVERLAPPEDWINDOW, false);
 
 	//4、创建窗口

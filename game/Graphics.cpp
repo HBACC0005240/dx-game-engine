@@ -109,7 +109,7 @@ HRESULT Graphics::InitVertex()
 	g_point->CreateVectex();
 
 	//创建顶点缓存
-	g_line->CreateVectex();
+	//g_line->CreateVectex();
 
 	//创建三角形顶点缓存
 	g_triangle->CreateVectex();
@@ -155,7 +155,17 @@ void Graphics::Render()
 	g_point->Draw();
 
 	//画线列表
-	g_line->Draw();
+	g_line->Draw(400.0f,0.0f,400.0f,600.0f,0xffffffff);
+	g_line->Draw(0.0f,300.0f,800.0f,300.0f,0xff00ffff);
+
+	g_line->Draw(408.0f,0.0f,408.0f,600.0f,0xffffffff);
+
+	g_line->Draw(409.0f,0.0f,409.0f,600.0f,0xffffffff);
+	g_line->Draw(472.0f,0.0f,472.0f,600.0f,0xffffffff);
+
+	g_line->Draw(469.0f,0.0f,469.0f,600.0f,0xffffffff);
+
+	//画线列表
 
 	//画三角形
 	g_triangle->Draw();

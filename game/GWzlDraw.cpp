@@ -78,8 +78,8 @@ HRESULT GWzlDraw::CreateVectexRHW(LPDIRECT3DDEVICE9 p_d3dDevice)
 	}
 
 
-	float tWidth = sImage.width * bei2;
-	float tHeight = sImage.height * bei2;
+	float tWidth = sImage.width * bei2 + 1;
+	float tHeight = sImage.height * bei2 + 1;
 
 	float wof2 = 400.0f + sImage.x;
 	float hof2 = 300.0f + sImage.y;
@@ -180,8 +180,8 @@ void GWzlDraw::Draw(LPDIRECT3DDEVICE9 d3dDevice)
 
 	IDirect3DSurface9* pBackBuffer = NULL;
 	int offsetX = 300 + sImage.x, offsetY = 300 + sImage.y;
-	RECT rect1 = { 0,0,m_d3dSurfaceDesc.Width,m_d3dSurfaceDesc.Height };
-	RECT rect2 = { offsetX ,offsetY ,m_d3dSurfaceDesc.Width + offsetX,m_d3dSurfaceDesc.Height + offsetY };
+	RECT rect1 = { 0,0,static_cast<LONG>(m_d3dSurfaceDesc.Width),static_cast<LONG>(m_d3dSurfaceDesc.Height) };
+	RECT rect2 = { offsetX ,offsetY ,static_cast<LONG>(m_d3dSurfaceDesc.Width) + offsetX,static_cast<LONG>(m_d3dSurfaceDesc.Height) + offsetY };
 	d3dDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
 	d3dDevice->StretchRect(m_d3dSurface, &rect1, pBackBuffer, &rect2, D3DTEXF_LINEAR);
 }
@@ -258,7 +258,7 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 
 
 	int offsetX = 300 + sImage.x, offsetY = 300 + sImage.y;
-	RECT rect1 = { 0,0,m_d3dSurfaceDesc.Width,m_d3dSurfaceDesc.Height };
+	RECT rect1 = { 0,0,static_cast<LONG>(m_d3dSurfaceDesc.Width),static_cast<LONG>(m_d3dSurfaceDesc.Height) };
 	//D3DXVECTOR3 pos = D3DXVECTOR3(offsetX, offsetY, 0.0f);
 
 	//pSprite->Begin(D3DXSPRITE_ALPHABLEND);
@@ -298,6 +298,10 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 	d3dDevice->SetStreamSource(0, m_d3dBuffer, 0, sizeof(GTextureVertex));
 	d3dDevice->SetFVF(GTextureVertex::FVF);
 	d3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+	if (pTexture != NULL)
+	{
+		pTexture->Release();
+	}
 }
 
 void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
@@ -375,23 +379,24 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
 	IDirect3DSurface9* m_srcD3dSurface;
 	IDirect3DSurface9* m_dstD3dSurface;
 
-	hr = d3dDevice->CreateTexture(sImage.width, sImage.height, 0, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &dstTexture, NULL);
-	dstTexture->GetSurfaceLevel(0,&m_dstD3dSurface);
-	pTexture->GetSurfaceLevel(0, &m_srcD3dSurface);
+	//hr = d3dDevice->CreateTexture(sImage.width, sImage.height, 0, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &dstTexture, NULL);
+	//dstTexture->GetSurfaceLevel(0,&m_dstD3dSurface);
+	//pTexture->GetSurfaceLevel(0, &m_srcD3dSurface);
 
-	D3DXLoadSurfaceFromSurface(
-		m_dstD3dSurface, 
-		NULL, NULL, 
-		m_srcD3dSurface, 
-		NULL, NULL, 
-		D3DX_FILTER_LINEAR, 
-		D3DCOLOR_ARGB(0,0,0,0)
-	);
+	//D3DXLoadSurfaceFromSurface(
+	//	m_dstD3dSurface, 
+	//	NULL, NULL, 
+	//	m_srcD3dSurface, 
+	//	NULL, NULL, 
+	//	D3DX_FILTER_LINEAR, 
+	//	D3DCOLOR_ARGB(0,0,0,0)
+	//);
 
 	int offsetX = 300 + sImage.x, offsetY = 300 + sImage.y;
-	RECT rect1 = { 0,0,m_d3dSurfaceDesc.Width,m_d3dSurfaceDesc.Height };
+	RECT rect1 = { 0,0,static_cast<LONG>(m_d3dSurfaceDesc.Width),static_cast<LONG>(m_d3dSurfaceDesc.Height) };
 
 
+	d3dDevice->SetTexture(0, pTexture);
 
 
 	//Í¸Ã÷É«
@@ -399,13 +404,19 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
 	//d3dDevice->SetRenderState(D3DRS_ALPHAREF, 0x00000000);
 	//d3dDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
+	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+	d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	//d3dDevice->SetRenderState(d3drs_A)
 
-	d3dDevice->SetTexture(0, dstTexture);
 
 	d3dDevice->SetStreamSource(0, m_d3dBuffer, 0, sizeof(GTextureVertexRHW));
 	d3dDevice->SetFVF(GTextureVertexRHW::FVF);
 	d3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
-	pTexture->Release();
+	if (pTexture != NULL)
+	{
+		pTexture->Release();
+	}
+	//dstTexture->Release();
 }

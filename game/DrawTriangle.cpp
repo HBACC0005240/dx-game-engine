@@ -53,9 +53,9 @@ HRESULT DrawTriangle::Create3DVectex()
     Vertex3DTriangle Vertices[] =
     {
         { -1.0f,-1.0f, 0.0f, 0xffff0000, },
-        {  0.0f, 1.0f, 0.0f, 0xffffffff, },
+        {  -1.0f, 1.0f, 0.0f, 0xffffffff, },
         {  1.0f,-1.0f, 0.0f, 0xff0000ff, },
-        {  0.0f, -1.0f, -1.0f, 0xffffffff, },
+        {  1.0f, 1.0f, 0.0f, 0xffffffff, },
     };
 
     if (FAILED(p_d3dDevice->CreateVertexBuffer(sizeof(Vertices), 0, D3DFVF_3D_TRIANGLE, D3DPOOL_DEFAULT, &g_pVB, NULL)))

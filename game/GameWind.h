@@ -21,7 +21,7 @@ private:
     HINSTANCE mhInstance = nullptr;
     static const wchar_t* wndClassName;
 public:
-    GameWind(HINSTANCE hInstacne, int width, int height);
+    GameWind(HINSTANCE hInstacne, float width, float height);
     GameWind(const GameWind& wnd);
     ~GameWind();
     void ShowWind();
@@ -30,4 +30,4 @@ public:
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 
-GameWind* CALL windCreate(HINSTANCE hInstance, int width, int hegiht);
+GameWind* CALL windCreate(HINSTANCE hInstance, float width, float hegiht);

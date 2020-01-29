@@ -14,19 +14,17 @@ DrawLine::~DrawLine()
 }
 
 //初始化顶点缓存
-HRESULT DrawLine::CreateVectex()
+HRESULT DrawLine::CreateVectex(float x,float y,float x1,float y2,DWORD color)
 {
 	//顶点
-	DWORD color1 = 0xffffffff;
-	DWORD color2 = 0xff00ff00;
+	//DWORD color1 = 0xffffffff;
+	//DWORD color2 = 0xff00ff00;
 	VertexLine vertex[] = {
-		{-100.0f, 0.0f, 0.0f,  color1},
-		{ 100.0f, 0.0f, 0.0f,  color1},
-		{ 0.0f,  100.0f, 0.0f, color2},
-		{ 0.0f, -100.0f, 0.0f, color2}
+		{x, y, 0.0f,1.0f,  color},
+		{ x1, y2, 0.0f, 1.0f, color},
 	};
 
-	if (FAILED(p_d3dDevice->CreateVertexBuffer(sizeof(vertex), 0, D3DFVF_VERTEX, D3DPOOL_DEFAULT, &g_pVB, NULL))) {
+	if (FAILED(p_d3dDevice->CreateVertexBuffer(sizeof(vertex), 0, D3DFVF_VERTEX_LINE, D3DPOOL_DEFAULT, &g_pVB, NULL))) {
 		return E_FAIL;
 	}
 	//throw AHLIN::Exception(_FILE, _LINE, L"创建point顶点缓存失败");
@@ -44,9 +42,11 @@ HRESULT DrawLine::CreateVectex()
 }
 
 //绘制点列表
-void DrawLine::Draw()
+void DrawLine::Draw(float x, float y, float x1, float y1, DWORD color)
 {
+	CreateVectex(x,y,x1,y1,color);
 	p_d3dDevice->SetStreamSource(0, g_pVB, 0, sizeof(VertexLine));
-	p_d3dDevice->SetFVF(D3DFVF_VERTEX);
-	p_d3dDevice->DrawPrimitive(D3DPT_LINESTRIP, 0, 3);
+	g_pVB->Release();
+	p_d3dDevice->SetFVF(D3DFVF_VERTEX_LINE);
+	p_d3dDevice->DrawPrimitive(D3DPT_LINELIST, 0, 1);
 }
