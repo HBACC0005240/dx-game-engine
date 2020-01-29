@@ -306,12 +306,13 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
 
 	LPD3DXSPRITE pSprite = NULL;
 	LPDIRECT3DTEXTURE9 pTexture = NULL;
+	LPDIRECT3DTEXTURE9 dstTexture = NULL;
 
 	HRESULT hr = S_OK;
 	//hr = D3DXCreateSprite(d3dDevice, &pSprite);
 
 	///创建贴图
-	D3DFORMAT fmt = sImage.pixelFormat == 3 ? D3DFMT_X8R8G8B8 : D3DFMT_R5G6B5;
+	D3DFORMAT fmt = sImage.pixelFormat == 3 ? D3DFMT_A8R8G8B8 : D3DFMT_R5G6B5;
 	hr = d3dDevice->CreateTexture(sImage.width, sImage.height, 0, D3DUSAGE_DYNAMIC, fmt, D3DPOOL_DEFAULT, &pTexture, NULL);
 	
 	//获取表面信息
@@ -348,10 +349,10 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
 				byte  b = m_color[data[sort]].peBlue;
 				if (r != 0 && g != 0 && b != 0)
 				{
-					imageData3[index] = D3DCOLOR_XRGB(r, g, b);
+					imageData3[index] = D3DCOLOR_ARGB(0xff,r, g, b);
 				}
 				else {
-					imageData3[index] = D3DCOLOR_ARGB(0,0, 0, 0);
+					imageData3[index] = D3DCOLOR_ARGB(255,0, 0, 0);
 				}
 			}
 			else if (sImage.pixelFormat == 5)
@@ -371,11 +372,36 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
 	//解锁
 	pTexture->UnlockRect(0);
 
+	IDirect3DSurface9* m_srcD3dSurface;
+	IDirect3DSurface9* m_dstD3dSurface;
+
+	hr = d3dDevice->CreateTexture(sImage.width, sImage.height, 0, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &dstTexture, NULL);
+	dstTexture->GetSurfaceLevel(0,&m_dstD3dSurface);
+	pTexture->GetSurfaceLevel(0, &m_srcD3dSurface);
+
+	D3DXLoadSurfaceFromSurface(
+		m_dstD3dSurface, 
+		NULL, NULL, 
+		m_srcD3dSurface, 
+		NULL, NULL, 
+		D3DX_FILTER_LINEAR, 
+		D3DCOLOR_ARGB(0,0,0,0)
+	);
 
 	int offsetX = 300 + sImage.x, offsetY = 300 + sImage.y;
 	RECT rect1 = { 0,0,m_d3dSurfaceDesc.Width,m_d3dSurfaceDesc.Height };
 
-	d3dDevice->SetTexture(0, pTexture);
+
+
+
+	//透明色
+	//d3dDevice->SetRenderState(D3DRS_ALPHATESTENABLE, true);
+	//d3dDevice->SetRenderState(D3DRS_ALPHAREF, 0x00000000);
+	//d3dDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+
+	//d3dDevice->SetRenderState(d3drs_A)
+
+	d3dDevice->SetTexture(0, dstTexture);
 
 	d3dDevice->SetStreamSource(0, m_d3dBuffer, 0, sizeof(GTextureVertexRHW));
 	d3dDevice->SetFVF(GTextureVertexRHW::FVF);
