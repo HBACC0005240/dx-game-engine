@@ -197,7 +197,7 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 	hr = D3DXCreateSprite(d3dDevice, &pSprite);
 
 	///创建贴图
-	D3DFORMAT fmt = sImage.pixelFormat == 3 ? D3DFMT_X8R8G8B8 : D3DFMT_R5G6B5;
+	D3DFORMAT fmt = sImage.pixelFormat == 3 ? D3DFMT_A8R8G8B8 : D3DFMT_R5G6B5;
 	hr = d3dDevice->CreateTexture(sImage.width, sImage.height, 0, D3DUSAGE_DYNAMIC, fmt, D3DPOOL_DEFAULT, &pTexture, NULL);
 
 	//获取表面信息
@@ -233,10 +233,10 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 				byte  b = m_color[data[sort]].peBlue;
 				if (r != 0 && g != 0 && b != 0)
 				{
-					imageData3[index] = D3DCOLOR_XRGB(r, g, b);
+					imageData3[index] = D3DCOLOR_ARGB(0xff,r, g, b);
 				}
 				else {
-					imageData3[index] = D3DCOLOR_XRGB(255, 255, 255);
+					imageData3[index] = D3DCOLOR_ARGB(0,0,0,0);
 				}
 			}
 			else if (sImage.pixelFormat == 5)
@@ -289,11 +289,18 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 	//matWorld = scale * Tworld * matWorld;
 	//d3dDevice->SetTransform(D3DTS_WORLD, &matWorld);
 
-	d3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-	d3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-
+	//d3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+	//d3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
 
 	d3dDevice->SetTexture(0, pTexture);
+
+	//绘制前要开启融合运算
+	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+
+	//设定融合因子，采用默认值
+	d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
 
 	d3dDevice->SetStreamSource(0, m_d3dBuffer, 0, sizeof(GTextureVertex));
 	d3dDevice->SetFVF(GTextureVertex::FVF);
@@ -356,7 +363,7 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
 					imageData3[index] = D3DCOLOR_ARGB(0xff,r, g, b);
 				}
 				else {
-					imageData3[index] = D3DCOLOR_ARGB(255,0, 0, 0);
+					imageData3[index] = D3DCOLOR_ARGB(0,0, 0, 0);
 				}
 			}
 			else if (sImage.pixelFormat == 5)
@@ -404,10 +411,12 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
 	//d3dDevice->SetRenderState(D3DRS_ALPHAREF, 0x00000000);
 	//d3dDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
+	//绘制前要开启融合运算
 	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+
+	//设定融合因子，采用默认值
 	d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	//d3dDevice->SetRenderState(d3drs_A)
 
 
 	d3dDevice->SetStreamSource(0, m_d3dBuffer, 0, sizeof(GTextureVertexRHW));
