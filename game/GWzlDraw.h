@@ -294,8 +294,8 @@ public:
 	GWzlDraw();
 	~GWzlDraw();
 	HRESULT CreateVectex(LPDIRECT3DDEVICE9 d3dDevice);
-	HRESULT CreateVectexRHW(LPDIRECT3DDEVICE9 d3dDevice);
+	HRESULT CreateVectexRHW(LPDIRECT3DDEVICE9 d3dDevice, int x, int y);
 	void Draw(LPDIRECT3DDEVICE9 d3dDevice);
 	void DrawTexture(LPDIRECT3DDEVICE9 d3dDevice);
-	void DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice);
+	void DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice, int x = 0, int y = 0);
 };

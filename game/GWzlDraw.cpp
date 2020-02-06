@@ -70,7 +70,7 @@ HRESULT GWzlDraw::CreateVectex(LPDIRECT3DDEVICE9 p_d3dDevice)
 
 //创建顶点缓存
 float bei2 = 1.0f;
-HRESULT GWzlDraw::CreateVectexRHW(LPDIRECT3DDEVICE9 p_d3dDevice)
+HRESULT GWzlDraw::CreateVectexRHW(LPDIRECT3DDEVICE9 p_d3dDevice, int x, int y)
 {
 	if (m_d3dBuffer)
 	{
@@ -81,8 +81,8 @@ HRESULT GWzlDraw::CreateVectexRHW(LPDIRECT3DDEVICE9 p_d3dDevice)
 	float tWidth = sImage.width * bei2 + 1;
 	float tHeight = sImage.height * bei2 + 1;
 
-	float wof2 = 400.0f + sImage.x;
-	float hof2 = 300.0f + sImage.y;
+	float wof2 = x + sImage.x;
+	float hof2 = y + sImage.y;
 
 	tWidth = tWidth + wof2;
 	tHeight = tHeight + hof2;
@@ -311,16 +311,13 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 	}
 }
 
-void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
+void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice,int x,int y)
 {
-	CreateVectexRHW(d3dDevice);
+	CreateVectexRHW(d3dDevice,x,y);
 
-	LPD3DXSPRITE pSprite = NULL;
 	LPDIRECT3DTEXTURE9 pTexture = NULL;
-	LPDIRECT3DTEXTURE9 dstTexture = NULL;
 
 	HRESULT hr = S_OK;
-	//hr = D3DXCreateSprite(d3dDevice, &pSprite);
 
 	///创建贴图
 	D3DFORMAT fmt = sImage.pixelFormat == 3 ? D3DFMT_A8R8G8B8 : D3DFMT_R5G6B5;
@@ -333,9 +330,13 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
 	D3DLOCKED_RECT lockRect;
 	pTexture->LockRect(0, &lockRect, 0, 0);
 
+	int sort = 0;
+	int index = 0;
+	int height = m_d3dSurfaceDesc.Height;
+	int width = m_d3dSurfaceDesc.Width;
+
 	DWORD* imageData3 = nullptr;
 	SHORT* imageData5 = nullptr;
-
 	if (sImage.pixelFormat == 3)
 	{
 		imageData3 = (DWORD*)lockRect.pBits;
@@ -345,20 +346,23 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
 		imageData5 = (SHORT*)lockRect.pBits;
 	}
 
-	for (UINT i = 0; i < m_d3dSurfaceDesc.Height; i++)
+	for (UINT h = 0; h < height; h++)
 	{
-		for (UINT j = 0; j < m_d3dSurfaceDesc.Width; j++)
+		for (UINT w = 0; w < width; w++)
 		{
-			if (sImage.pixelFormat == 3)
-			{
-				UINT index = i * lockRect.Pitch / 4 + j;
-
-				UINT sort = ((m_d3dSurfaceDesc.Height - 1) - i) * m_d3dSurfaceDesc.Width + j;
-
+			if (sImage.pixelFormat == 3) {
+				//数据 第一行 是图片的最后一行 数据从上往下读取
+				//D3DFMT_A8R8G8B8
+				sort = (h * width) + w;
 				byte  r = m_color[data[sort]].peRed;
 				byte  g = m_color[data[sort]].peGreen;
 				byte  b = m_color[data[sort]].peBlue;
-				if (r != 0 && g != 0 && b != 0)
+				DWORD color = D3DCOLOR_ARGB(0xff, r, g, b);
+				//index = (height - h) * width + w;
+
+				//图片数组 绘制从下往上
+				UINT index = (height - 1 - h) * lockRect.Pitch / 4 + w;
+				if (color != 0xff000000)
 				{
 					imageData3[index] = D3DCOLOR_ARGB(0xff,r, g, b);
 				}
@@ -369,47 +373,72 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
 			else if (sImage.pixelFormat == 5)
 			{
 				//D3DFMT_R5G6B5
-				UINT id = (((m_d3dSurfaceDesc.Height - 1) - i) * m_d3dSurfaceDesc.Width + j) * 2;
-				BYTE sh1 = data[id];
-				BYTE sh2 = data[id + 1];
-
+				sort = ((h * width) + w) *2;
+				BYTE sh1 = data[sort];
+				BYTE sh2 = data[sort + 1];
 				USHORT sVal = (sh2 << 8) | sh1;
-				UINT index = i * lockRect.Pitch / 2 + j;
+
+				UINT index = (height - 1 - h) * lockRect.Pitch / 2 + w;
 				imageData5[index] = sVal;
 			}
-
 		}
 	}
+		
 	//解锁
 	pTexture->UnlockRect(0);
 
-	IDirect3DSurface9* m_srcD3dSurface;
-	IDirect3DSurface9* m_dstD3dSurface;
+	//-------------------------------------
+	if (sImage.pixelFormat == 5) {
 
-	//hr = d3dDevice->CreateTexture(sImage.width, sImage.height, 0, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &dstTexture, NULL);
-	//dstTexture->GetSurfaceLevel(0,&m_dstD3dSurface);
-	//pTexture->GetSurfaceLevel(0, &m_srcD3dSurface);
+		LPDIRECT3DTEXTURE9 dstTexture = NULL;
 
-	//D3DXLoadSurfaceFromSurface(
-	//	m_dstD3dSurface, 
-	//	NULL, NULL, 
-	//	m_srcD3dSurface, 
-	//	NULL, NULL, 
-	//	D3DX_FILTER_LINEAR, 
-	//	D3DCOLOR_ARGB(0,0,0,0)
-	//);
+		//新建一个D3DFMT_A8R8G8B8
+		IDirect3DSurface9* m_srcD3dSurface;
+		IDirect3DSurface9* m_dstD3dSurface;
 
-	int offsetX = 300 + sImage.x, offsetY = 300 + sImage.y;
+		hr = d3dDevice->CreateTexture(sImage.width, sImage.height, 0, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &dstTexture, NULL);
+		dstTexture->GetSurfaceLevel(0,&m_dstD3dSurface);
+		pTexture->GetSurfaceLevel(0, &m_srcD3dSurface);
+
+		D3DXLoadSurfaceFromSurface(
+			m_dstD3dSurface, 
+			NULL, NULL, 
+			m_srcD3dSurface, 
+			NULL, NULL, 
+			D3DX_FILTER_LINEAR, 
+			D3DCOLOR_ARGB(0,0,0,0)
+		);
+		D3DSURFACE_DESC d3ddesc;
+		m_dstD3dSurface->GetDesc(&d3ddesc);
+
+		///表面数据
+		D3DLOCKED_RECT lockr = {0};
+		m_dstD3dSurface->LockRect(&lockr, 0, 0);
+		DWORD* imageData33 = (DWORD*)lockr.pBits;
+
+		DWORD color = 0;
+		for (UINT i = 0; i < d3ddesc.Height; i++)
+		{
+			for (UINT j = 0; j < d3ddesc.Width; j++)
+			{
+				UINT index = i * lockr.Pitch / 4 + j;
+				if (imageData33[index] == 0xff000000)
+				{
+					imageData33[index] = D3DCOLOR_ARGB(0, 0, 0, 0);
+				}
+			}
+		}
+
+		m_dstD3dSurface->UnlockRect();
+
+		d3dDevice->SetTexture(0, dstTexture);
+	}
+	else {
+		d3dDevice->SetTexture(0, pTexture);
+	}
+
+	int offsetX = x + sImage.x, offsetY = y + sImage.y;
 	RECT rect1 = { 0,0,static_cast<LONG>(m_d3dSurfaceDesc.Width),static_cast<LONG>(m_d3dSurfaceDesc.Height) };
-
-
-	d3dDevice->SetTexture(0, pTexture);
-
-
-	//透明色
-	//d3dDevice->SetRenderState(D3DRS_ALPHATESTENABLE, true);
-	//d3dDevice->SetRenderState(D3DRS_ALPHAREF, 0x00000000);
-	//d3dDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
 	//绘制前要开启融合运算
 	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
@@ -423,9 +452,10 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice)
 	d3dDevice->SetFVF(GTextureVertexRHW::FVF);
 	d3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
-	if (pTexture != NULL)
+	if (pTexture != nullptr)
 	{
 		pTexture->Release();
 	}
+
 	//dstTexture->Release();
 }
