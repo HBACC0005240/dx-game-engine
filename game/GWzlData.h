@@ -27,4 +27,5 @@ public:
 
 	//МгдиЪ§Он
 	void Load(HUM_STATE state, DIRECTION dir, int frame, GWzlDraw* pDraw);
+	void LoadWzl(int offset, GWzlDraw* pDraw);
 };
