@@ -6,6 +6,7 @@ struct POS
 	int x, y;
 };
 
+#define TOTAL_FRAME 8
 class GPlayer {
 
 public:

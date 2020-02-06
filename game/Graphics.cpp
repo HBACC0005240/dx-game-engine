@@ -1,5 +1,4 @@
 #include "Graphics.h"
-
 //初始化
 Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	OutputDebugString(L"Graphics()构造\n");
@@ -29,6 +28,10 @@ Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	pWzlHum = new GWzlData(file);
 
 	g_player = new GPlayer(pWzlHum, 0, 0, m_d3dDevice);
+
+	//
+	char map[] = "0114";
+	g_map = new GMap(map, m_d3dDevice);
 }
 
 Graphics::~Graphics()
@@ -121,6 +124,9 @@ HRESULT Graphics::InitVertex()
 	//加载图片
 	g_player->Load(STAND,DOWN);
 
+	//加载地图
+	g_map->Load();
+
 	return S_OK;
 }
 
@@ -179,6 +185,9 @@ void Graphics::Render()
 
 	//绘制人物
 	g_player->Show();
+
+	//绘制地图
+	//g_map->Show();
 
 	D3DXMATRIX matWorld;
 	D3DXMatrixIdentity(&matWorld);

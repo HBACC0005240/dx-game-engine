@@ -20,7 +20,7 @@ void GPlayer::Load(HUM_STATE state,DIRECTION dir)
 {
 
 	//加载当前显示图片
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < TOTAL_FRAME; i++)
 	{
 		mpWzl->Load(state, dir, i, &mDraw[i]);
 	}
@@ -34,11 +34,11 @@ void GPlayer::Show()
 	}
 
 	//mDraw[mFrame].DrawTexture(p_d3dDevice);
-	mDraw[mFrame].DrawTextureRHW(p_d3dDevice);
+	mDraw[mFrame].DrawTextureRHW(p_d3dDevice,400,300);
 	if (time.CountDown(150))
 	{
 		mFrame++;
-		if (mFrame >= 8){
+		if (mFrame >= TOTAL_FRAME){
 			mFrame = 0;
 		}
 	}
