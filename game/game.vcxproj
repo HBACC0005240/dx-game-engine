@@ -155,6 +155,7 @@
     <ClCompile Include="DrawTriangle.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameWind.cpp" />
+    <ClCompile Include="GMap.cpp" />
     <ClCompile Include="GPlayer.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="GTime.cpp" />
@@ -173,11 +174,13 @@
     <ClInclude Include="Exception.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameWind.h" />
+    <ClInclude Include="GMap.h" />
     <ClInclude Include="GPlayer.h" />
     <ClInclude Include="GTime.h" />
     <ClInclude Include="GWzlDraw.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="GWzlData.h" />
+    <ClInclude Include="GWzlMap.h" />
     <ClInclude Include="GWzlOffset.h" />
     <ClInclude Include="GWzxData.h" />
   </ItemGroup>
