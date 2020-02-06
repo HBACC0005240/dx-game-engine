@@ -74,7 +74,7 @@ HRESULT GWzlDraw::CreateVectexRHW(LPDIRECT3DDEVICE9 p_d3dDevice, int x, int y)
 {
 	if (m_d3dBuffer)
 	{
-		//return S_OK;
+		return S_OK;
 	}
 
 
@@ -436,9 +436,6 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice,int x,int y)
 	else {
 		d3dDevice->SetTexture(0, pTexture);
 	}
-
-	int offsetX = x + sImage.x, offsetY = y + sImage.y;
-	RECT rect1 = { 0,0,static_cast<LONG>(m_d3dSurfaceDesc.Width),static_cast<LONG>(m_d3dSurfaceDesc.Height) };
 
 	//绘制前要开启融合运算
 	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
