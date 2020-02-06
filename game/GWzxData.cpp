@@ -49,21 +49,17 @@ void GWzxData::Load()
 	fclose(fp);
 }
 
-
 //获取索引值
-int GWzxData::GetAllOffset(HUM_STATE state, DIRECTION dir,int* offset)
+int GWzxData::GetOffset(int sort, int* offset)
 {
-	int start = state + (dir * 8);
-	for (int i = 0; i < 8; i++)
+	*offset = m_pWzxOffset[sort];
+	if (*offset == 48)
 	{
-		offset[i] = m_pWzxOffset[start + i];
-		if (offset[i] == 48)
-		{
-			offset[i] = 0;
-		}
+		*offset = 0;
 	}
 	return 0;
 }
+
 
 //获取索引值
 int GWzxData::GetOneOffset(HUM_STATE state, DIRECTION dir, int frame, int* offset)

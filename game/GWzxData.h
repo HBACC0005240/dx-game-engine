@@ -20,6 +20,6 @@ public:
 	~GWzxData();
 
 	void Load();
-	int GetAllOffset(HUM_STATE state,DIRECTION dir,int* offset);
+	int GetOffset(int sort,int* offset);
 	int GetOneOffset(HUM_STATE state, DIRECTION dir, int frame, int* offset);
 };
