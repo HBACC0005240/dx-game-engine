@@ -18,11 +18,15 @@ GPlayer::~GPlayer()
 
 void GPlayer::Load(HUM_STATE state,DIRECTION dir)
 {
-
-	//加载当前显示图片
-	for (int i = 0; i < TOTAL_FRAME; i++)
+	int totalFarme = TOTAL_FRAME;
+	if (state == BATTLE_POS)
 	{
-		mpWzl->Load(state, dir, i, &mDraw[i]);
+		totalFarme = 1;
+	}
+	//加载当前显示图片
+	for (int i = 0; i < totalFarme; i++)
+	{
+		mpWzl->Load(state, dir, i, &mDraw[i], totalFarme);
 	}
 }
 
@@ -34,7 +38,7 @@ void GPlayer::Show()
 	}
 
 	//mDraw[mFrame].DrawTexture(p_d3dDevice);
-	mDraw[mFrame].DrawTextureRHW(p_d3dDevice,400,300);
+	mDraw[mFrame].DrawTextureRHW(p_d3dDevice,375,273);
 	if (time.CountDown(150))
 	{
 		mFrame++;

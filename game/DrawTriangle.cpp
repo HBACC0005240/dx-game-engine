@@ -18,14 +18,15 @@ DrawTriangle::~DrawTriangle()
  *|如果开启自动深度维护，则就会启用深度，配合：clear使用 深度清屏 则绘制的点，线，三角形等z值就起作用
  *+----------------------------------------------------
  */
-HRESULT DrawTriangle::CreateVectex()
+HRESULT DrawTriangle::CreateVectex(float x, float y ,DWORD color)
 {
-    // Initialize three Vertices for rendering a triangle
+
     VertexTriangle Vertices[] =
     {
-        { 300.0f,  100.0f, 1.0f, 1.0f, 0xffff0000, }, // x, y, z, rhw, color
-        { 400.0f, 200.0f, 1.0f, 1.0f, 0xff00ff00, },
-        { 150.0f, 200.0f, 1.0f, 1.0f, 0xff00ffff, },
+        { x,  y + 32.0f, 1.0f, 1.0f, color, }, // x, y, z, rhw, color
+        { x, y, 1.0f, 1.0f, 0xffffffff, },
+        { x + 48.0f, y + 32.0f, 1.0f, 1.0f, color, },
+        { x + 48.0f, y, 1.0f, 1.0f, color, },
     };
 
     // Create the vertex buffer. Here we are allocating enough memory
@@ -77,11 +78,13 @@ HRESULT DrawTriangle::Create3DVectex()
 }
 
 
-void DrawTriangle::Draw()
+void DrawTriangle::Draw(float x, float y, DWORD color)
 {
+    CreateVectex(x,y,color);
+
     p_d3dDevice->SetStreamSource(0, g_pVB, 0, sizeof(VertexTriangle));
     p_d3dDevice->SetFVF(D3DFVF_TRIANGLE);
-    p_d3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
+    p_d3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 }
 
 void DrawTriangle::Draw3D()

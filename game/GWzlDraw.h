@@ -25,8 +25,7 @@ public:
 	HUM_STATE mState; //当前动画状态
 	DIRECTION mDir;//当前帧方向
 	int frame;//当前帧数
-	IDirect3DSurface9* m_d3dSurface = nullptr;
-	D3DSURFACE_DESC m_d3dSurfaceDesc;
+
 
 	IDirect3DVertexBuffer9* m_d3dBuffer;
 

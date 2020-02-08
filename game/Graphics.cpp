@@ -1,5 +1,6 @@
 #include "Graphics.h"
 //初始化
+int pX = 333, pY = 286;
 Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	OutputDebugString(L"Graphics()构造\n");
 	InitD3D();
@@ -24,13 +25,15 @@ Graphics::Graphics(GameWind& wnd):wnd(wnd){
 
 	//加载人物图片
 	char file[] = ".\\Data\\hum";
+	//char file[] = ".\\Data\\hum2";
+	//char file[] = ".\\Data\\hum3";
 	//char file[] = ".\\Data\\items";
 	pWzlHum = new GWzlData(file);
 
 	g_player = new GPlayer(pWzlHum, 0, 0, m_d3dDevice);
 
 	//
-	char map[] = "0114";
+	char map[] = "0";
 	g_map = new GMap(map, m_d3dDevice);
 }
 
@@ -115,14 +118,14 @@ HRESULT Graphics::InitVertex()
 	//g_line->CreateVectex();
 
 	//创建三角形顶点缓存
-	g_triangle->CreateVectex();
+	//g_triangle->CreateVectex();
 
 	//创建3D三角形
 	g_3dtriangle->Create3DVectex();
 	//g_3dtriangle->setIndices();
 
 	//加载图片
-	g_player->Load(STAND,DOWN);
+	g_player->Load(RUN,DOWN);
 
 	//加载地图
 	g_map->Load();
@@ -141,40 +144,67 @@ void Graphics::Render()
 	//视图
 	g_camera->SetMatrices(wnd.mWidth,wnd.mHeight);
 	g_camera->SetTransform(GTime::GetCountDown());
+
+	//绘制地图
+	//WASD
+	if (::GetAsyncKeyState(0x57) & 0x8000f) {
+		pY -= 1;
+	}
+	if (::GetAsyncKeyState(0x41) & 0x8000f) {
+		pX -= 1;
+	}
+	if (::GetAsyncKeyState(0x53) & 0x8000f) {
+		pY += 1;
+	}
+	if (::GetAsyncKeyState(0x44) & 0x8000f) {
+		pX += 1;
+	}
+	if (::GetAsyncKeyState(0x51) & 0x8000f) {
+		pX = 0;
+	}
+	if (::GetAsyncKeyState(0x45) & 0x8000f) {
+		pY = 0;
+	}
+
+	g_map->Show(pX, pY);
+
+
 	//绘制FPS
 	g_text->DrawFps(Getfps(),&wnd.clientRect,0xffffffff);
 
 	//绘制鼠标
 	wchar_t pos[50] = {0};
 	wsprintf(pos, L"坐标：[%d,%d]", wnd.pt.x, wnd.pt.y);
-	g_text->Draw(pos, 0, 20, 800, 600, 0x88ffffff);
+	g_text->Draw(pos, 0, 20, 800, 600, 0xffffffff);
 	
 	//绘制时间
 	wsprintf(pos, L"time：[%d]-[%d]", GTime::s_tNowTime,GTime::s_tPrevTime);
-	g_text->Draw(pos, 0, 40, 800, 600, 0x88ffffff);
+	g_text->Draw(pos, 0, 40, 800, 600, 0xffffffff);
 
 	//屏幕宽高
 	wsprintf(pos, L"wh：[%d,%d]", static_cast<int>(wnd.mWidth), static_cast<int>(wnd.mHeight));
-	g_text->Draw(pos, 0, 80, 800, 600, 0x88ffffff);
+	g_text->Draw(pos, 0, 80, 800, 600, 0xffffffff);
+
+	//人物坐标
+	wsprintf(pos, L"xy：[%d,%d]", pX,pY);
+	g_text->Draw(pos, 0, 100, 800, 600, 0xffffffff);
 
 	//画点列表
 	g_point->Draw();
 
 	//画线列表
-	g_line->Draw(400.0f,0.0f,400.0f,600.0f,0xffffffff);
-	g_line->Draw(0.0f,300.0f,800.0f,300.0f,0xff00ffff);
+	g_line->Draw(400.0f,0.0f,400.0f,600.0f, 0xffffffff);
+	g_line->Draw(0.0f,300.0f,800.0f,300.0f, 0xffffffff);
 
-	g_line->Draw(408.0f,0.0f,408.0f,600.0f,0xffffffff);
-
-	g_line->Draw(409.0f,0.0f,409.0f,600.0f,0xffffffff);
-	g_line->Draw(472.0f,0.0f,472.0f,600.0f,0xffffffff);
-
-	g_line->Draw(469.0f,0.0f,469.0f,600.0f,0xffffffff);
+	
+	//蛟龙套装POS DOWN
+	g_line->Draw(195.0f,0.0f,195.0f,600.0f, 0xffffffff);
+	g_line->Draw(322.0f, 0.0f, 322.0f, 600.0f, 0xffffffff);
 
 	//画线列表
 
 	//画三角形
-	g_triangle->Draw();
+	//g_triangle->Draw();
 
 
 	//画3d三角形
@@ -183,11 +213,21 @@ void Graphics::Render()
 
 	//KeyDown();
 
+
+	//绘图
+	//for (float i = 0; i < 800; i+=48)
+	//{
+	//	g_line->Draw(i, 0.0f, i, 600.0f, D3DCOLOR_RGBA(255,255,0,0));
+	//}
+
+	//for (float j = 0; j < 600; j += 32)
+	//{
+	//	g_line->Draw(0.0f, j, 800.0f, j, D3DCOLOR_RGBA(255, 0, 255, 0));
+	//}
+
+
 	//绘制人物
 	g_player->Show();
-
-	//绘制地图
-	//g_map->Show();
 
 	D3DXMATRIX matWorld;
 	D3DXMatrixIdentity(&matWorld);

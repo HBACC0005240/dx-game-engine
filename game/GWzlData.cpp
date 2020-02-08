@@ -13,13 +13,17 @@ GWzlData::GWzlData(char file[])
 	strcat_s(m_WzlFile, sizeof(m_WzlFile), ".wzl");
 }
 
+GWzlData::GWzlData()
+{
+}
+
 GWzlData::~GWzlData()
 {
 	OutputDebugString(L"~GWzlData()析构\n");
 	delete pWzx;
 }
 
-void GWzlData::Load(HUM_STATE state, DIRECTION dir,int frame,GWzlDraw * pDraw)
+void GWzlData::Load(HUM_STATE state, DIRECTION dir,int frame,GWzlDraw * pDraw ,int totalFrame)
 {
 	FILE* fp;
 
@@ -33,7 +37,7 @@ void GWzlData::Load(HUM_STATE state, DIRECTION dir,int frame,GWzlDraw * pDraw)
 
 	//根据状态 加载图片
 	int offset = 0;
-	pWzx->GetOneOffset(state, dir, frame, &offset);
+	pWzx->GetOneOffset(state, dir, frame, &offset, totalFrame);
 	if (offset == 0)
 	{
 		OutputDebugString(TEXT("偏移为0，不加载！\n"));
@@ -77,6 +81,10 @@ void GWzlData::Load(HUM_STATE state, DIRECTION dir,int frame,GWzlDraw * pDraw)
 
 void GWzlData::LoadWzl(int wzx_sort, GWzlDraw* pDraw)
 {
+	if (pDraw->data != nullptr)
+	{
+		delete pDraw->data;
+	}
 	FILE* fp;
 
 	//读取wzl

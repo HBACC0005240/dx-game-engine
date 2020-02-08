@@ -23,8 +23,8 @@ private:
 public:
 	DrawTriangle(LPDIRECT3DDEVICE9 d3dDevice);
 	~DrawTriangle();
-	HRESULT CreateVectex();
+	HRESULT CreateVectex(float x, float y ,DWORD color);
 	HRESULT Create3DVectex();
-	void Draw();
+	void Draw(float x, float y, DWORD color);
 	void Draw3D();
 };

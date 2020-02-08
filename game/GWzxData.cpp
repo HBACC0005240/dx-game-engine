@@ -62,9 +62,9 @@ int GWzxData::GetOffset(int sort, int* offset)
 
 
 //获取索引值
-int GWzxData::GetOneOffset(HUM_STATE state, DIRECTION dir, int frame, int* offset)
+int GWzxData::GetOneOffset(HUM_STATE state, DIRECTION dir, int frame, int* offset,int totalFrame)
 {
-	int start = state + (dir * 8);
+	int start = state + (dir * totalFrame);
 	*offset = m_pWzxOffset[start + frame];
 	if (*offset == 48)
 	{

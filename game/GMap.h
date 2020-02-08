@@ -36,5 +36,5 @@ public:
 	GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice);
 	~GMap();
 	void Load();
-	void Show();
+	void Show(int x,int y);
 };

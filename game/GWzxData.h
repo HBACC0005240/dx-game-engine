@@ -21,5 +21,5 @@ public:
 
 	void Load();
 	int GetOffset(int sort,int* offset);
-	int GetOneOffset(HUM_STATE state, DIRECTION dir, int frame, int* offset);
+	int GetOneOffset(HUM_STATE state, DIRECTION dir, int frame, int* offset, int totalFrame = 8);
 };

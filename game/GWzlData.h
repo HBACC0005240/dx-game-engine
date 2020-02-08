@@ -23,9 +23,10 @@ protected:
 public:
 	
 	GWzlData(char file[]);
+	GWzlData();
 	~GWzlData();
 
 	//МгдиЪ§Он
-	void Load(HUM_STATE state, DIRECTION dir, int frame, GWzlDraw* pDraw);
+	void Load(HUM_STATE state, DIRECTION dir, int frame, GWzlDraw* pDraw, int totalFrame = 8);
 	void LoadWzl(int offset, GWzlDraw* pDraw);
 };

@@ -74,7 +74,8 @@ HRESULT GWzlDraw::CreateVectexRHW(LPDIRECT3DDEVICE9 p_d3dDevice, int x, int y)
 {
 	if (m_d3dBuffer)
 	{
-		return S_OK;
+		m_d3dBuffer->Release();
+		//return S_OK;
 	}
 
 
@@ -114,6 +115,8 @@ HRESULT GWzlDraw::CreateVectexRHW(LPDIRECT3DDEVICE9 p_d3dDevice, int x, int y)
 
 void GWzlDraw::Draw(LPDIRECT3DDEVICE9 d3dDevice)
 {
+	IDirect3DSurface9* m_d3dSurface = nullptr;
+	D3DSURFACE_DESC m_d3dSurfaceDesc = {};
 	//OutputDebugString(TEXT("绘制完成\n"));
 	///创建表面
 	D3DFORMAT fmt = sImage.pixelFormat == 3 ? D3DFMT_A8R8G8B8 : D3DFMT_R5G6B5;
@@ -192,6 +195,8 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 
 	LPD3DXSPRITE pSprite = NULL;
 	LPDIRECT3DTEXTURE9 pTexture = NULL;
+	IDirect3DSurface9* m_d3dSurface = nullptr;
+	D3DSURFACE_DESC m_d3dSurfaceDesc = {};
 
 	HRESULT hr = S_OK;
 	hr = D3DXCreateSprite(d3dDevice, &pSprite);
@@ -316,13 +321,15 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice,int x,int y)
 	CreateVectexRHW(d3dDevice,x,y);
 
 	LPDIRECT3DTEXTURE9 pTexture = NULL;
+	IDirect3DSurface9* m_d3dSurface = nullptr;
+	D3DSURFACE_DESC m_d3dSurfaceDesc = {};
 
 	HRESULT hr = S_OK;
 
 	///创建贴图
 	D3DFORMAT fmt = sImage.pixelFormat == 3 ? D3DFMT_A8R8G8B8 : D3DFMT_R5G6B5;
 	hr = d3dDevice->CreateTexture(sImage.width, sImage.height, 0, D3DUSAGE_DYNAMIC, fmt, D3DPOOL_DEFAULT, &pTexture, NULL);
-	
+
 	//获取表面信息
 	pTexture->GetLevelDesc(0, &m_d3dSurfaceDesc);
 
@@ -373,12 +380,12 @@ void GWzlDraw::DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice,int x,int y)
 			else if (sImage.pixelFormat == 5)
 			{
 				//D3DFMT_R5G6B5
-				sort = ((h * width) + w) *2;
+				sort = ((h * width) + w) * 2;
 				BYTE sh1 = data[sort];
 				BYTE sh2 = data[sort + 1];
 				USHORT sVal = (sh2 << 8) | sh1;
 
-				UINT index = (height - 1 - h) * lockRect.Pitch / 2 + w;
+				index = (height - 1 - h) * lockRect.Pitch / 2 + w;
 				imageData5[index] = sVal;
 			}
 		}

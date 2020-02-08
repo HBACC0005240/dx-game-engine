@@ -14,14 +14,14 @@ DrawLine::~DrawLine()
 }
 
 //初始化顶点缓存
-HRESULT DrawLine::CreateVectex(float x,float y,float x1,float y2,DWORD color)
+HRESULT DrawLine::CreateVectex(float x,float y,float x1,float y1,DWORD color)
 {
 	//顶点
 	//DWORD color1 = 0xffffffff;
 	//DWORD color2 = 0xff00ff00;
 	VertexLine vertex[] = {
 		{x, y, 0.0f,1.0f,  color},
-		{ x1, y2, 0.0f, 1.0f, color},
+		{ x1, y1, 0.0f, 1.0f, color},
 	};
 
 	if (FAILED(p_d3dDevice->CreateVertexBuffer(sizeof(vertex), 0, D3DFVF_VERTEX_LINE, D3DPOOL_DEFAULT, &g_pVB, NULL))) {
