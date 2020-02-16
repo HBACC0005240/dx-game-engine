@@ -45,6 +45,9 @@ HRESULT DrawLine::CreateVectex(float x,float y,float x1,float y1,DWORD color)
 void DrawLine::Draw(float x, float y, float x1, float y1, DWORD color)
 {
 	CreateVectex(x,y,x1,y1,color);
+	//ÉèÖÃÌùÍ¼	
+	p_d3dDevice->SetTexture(0, NULL);
+
 	p_d3dDevice->SetStreamSource(0, g_pVB, 0, sizeof(VertexLine));
 	g_pVB->Release();
 	p_d3dDevice->SetFVF(D3DFVF_VERTEX_LINE);

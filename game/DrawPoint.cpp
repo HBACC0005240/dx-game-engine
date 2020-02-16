@@ -17,9 +17,9 @@ HRESULT DrawPoint::CreateVectex()
 {
 	//¶¥µã
 	VertexPoint vertex[] = {
-		{100.0f, 100.0f, 0.0f, 1.0f, 0x00ffffff},
-		{100.0f, 200.0f, 0.0f, 1.0f, 0x00ffffff},
-		{100.0f, 300.0f, 0.0f, 1.0f, 0x00ffffff}
+		{100.0f, 100.0f, 0.0f, 1.0f, 0xffffffff},
+		{100.0f, 200.0f, 0.0f, 1.0f, 0xffffffff},
+		{100.0f, 300.0f, 0.0f, 1.0f, 0xffffffff}
 	};
 
 	if (FAILED(p_d3dDevice->CreateVertexBuffer(sizeof(vertex), 0, D3DFVF_VERTEX, D3DPOOL_DEFAULT, &g_pVB, NULL))) {

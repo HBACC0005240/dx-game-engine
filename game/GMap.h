@@ -37,4 +37,6 @@ public:
 	~GMap();
 	void Load();
 	void Show(int x,int y);
+	//返回世界坐标系中心点实际坐标
+	static bool GetWorldXY(float X, float Y, float& mX, float& mY,bool IsCenter = false);
 };

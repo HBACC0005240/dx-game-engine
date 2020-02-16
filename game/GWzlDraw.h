@@ -26,8 +26,9 @@ public:
 	DIRECTION mDir;//当前帧方向
 	int frame;//当前帧数
 
-
+	LPDIRECT3DTEXTURE9 m_pTexture;
 	IDirect3DVertexBuffer9* m_d3dBuffer;
+	LPDIRECT3DDEVICE9 m_d3dDevice;
 
 private:
 	//8位图 256调色板
@@ -290,11 +291,12 @@ private:
 		PALETTEENTRY{255, 255, 255}
 	};
 public:
+	GWzlDraw(LPDIRECT3DDEVICE9 p_d3dDevice);
 	GWzlDraw();
 	~GWzlDraw();
 	HRESULT CreateVectex(LPDIRECT3DDEVICE9 d3dDevice);
-	HRESULT CreateVectexRHW(LPDIRECT3DDEVICE9 d3dDevice, int x, int y);
-	void Draw(LPDIRECT3DDEVICE9 d3dDevice);
+	HRESULT CreateVectexRHW(int x, int y);
+	void Draw(int x, int y);
 	void DrawTexture(LPDIRECT3DDEVICE9 d3dDevice);
-	void DrawTextureRHW(LPDIRECT3DDEVICE9 d3dDevice, int x = 0, int y = 0);
+	void CreateTexture();
 };

@@ -1,10 +1,15 @@
 #pragma once
 #include "GWzlData.h"
 #include "GWzlOffset.h"
+#include <unordered_map>
+
 struct POS
 {
 	int x, y;
 };
+
+typedef std::unordered_map<int, GWzlDraw*> GDrawMap;
+typedef std::pair<int, GWzlDraw*> GDrwa;
 
 #define TOTAL_FRAME 8
 class GPlayer {
@@ -13,7 +18,7 @@ public:
 	LPDIRECT3DDEVICE9 p_d3dDevice;
 	POS mPos = { 0,0 };
 	GWzlData* mpWzl = nullptr;
-	GWzlDraw mDraw[8];
+	GDrawMap m_DrawMap;
 	HUM_STATE mState = STAND;
 	DIRECTION mDir = UP;
 	static int mFrame;

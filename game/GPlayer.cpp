@@ -26,19 +26,34 @@ void GPlayer::Load(HUM_STATE state,DIRECTION dir)
 	//加载当前显示图片
 	for (int i = 0; i < totalFarme; i++)
 	{
-		mpWzl->Load(state, dir, i, &mDraw[i], totalFarme);
+		GDrawMap::iterator it = m_DrawMap.find(i);
+		if (it == m_DrawMap.end())
+		{
+			GWzlDraw* mDraw = new GWzlDraw(p_d3dDevice);
+			m_DrawMap.insert(GDrwa(i, mDraw));
+		}
+		mpWzl->Load(state, dir, i, m_DrawMap.at(i), totalFarme);
+		m_DrawMap.at(i)->CreateTexture();
 	}
 }
 
 void GPlayer::Show()
 {
 	//加载当前显示图片
-	if (mDraw[mFrame].data == nullptr){
+	if (m_DrawMap.at(mFrame)->data == nullptr){
 		mFrame = 0;
 	}
 
-	//mDraw[mFrame].DrawTexture(p_d3dDevice);
-	mDraw[mFrame].DrawTextureRHW(p_d3dDevice,375,273);
+	m_DrawMap.at(mFrame)->Draw(375, 273);
+	//m_DrawMap.at(mFrame)->Draw(100, 273);
+	//m_DrawMap.at(mFrame)->Draw(150, 273);
+	//m_DrawMap.at(mFrame)->Draw(200, 273);
+	//m_DrawMap.at(mFrame)->Draw(250, 273);
+	//m_DrawMap.at(mFrame)->Draw(300, 273);
+	//m_DrawMap.at(mFrame)->Draw(350, 273);
+	//m_DrawMap.at(mFrame)->Draw(400, 273);
+	//m_DrawMap.at(mFrame)->Draw(450, 273);
+	//m_DrawMap.at(mFrame)->Draw(500, 273);
 	if (time.CountDown(150))
 	{
 		mFrame++;

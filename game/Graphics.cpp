@@ -1,6 +1,7 @@
 #include "Graphics.h"
 //初始化
-int pX = 333, pY = 286;
+int pX = 0, pY = 0;
+bool keyW = false, keyA = false,keyS = false, keyD = false, keyQ = false, keyR = false;
 Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	OutputDebugString(L"Graphics()构造\n");
 	InitD3D();
@@ -33,7 +34,7 @@ Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	g_player = new GPlayer(pWzlHum, 0, 0, m_d3dDevice);
 
 	//
-	char map[] = "0";
+	char map[] = "20200216";
 	g_map = new GMap(map, m_d3dDevice);
 }
 
@@ -141,15 +142,18 @@ void Graphics::Render()
 	m_d3dDevice->BeginScene();
 	//-----------------------------
 
-	//视图
-	g_camera->SetMatrices(wnd.mWidth,wnd.mHeight);
-	g_camera->SetTransform(GTime::GetCountDown());
-
-	//绘制地图
 	//WASD
 	if (::GetAsyncKeyState(0x57) & 0x8000f) {
-		pY -= 1;
+		if (keyW)
+		{
+			pY -= 1;
+			keyW = false;
+		}
 	}
+	else {
+		keyW = true;
+	}
+
 	if (::GetAsyncKeyState(0x41) & 0x8000f) {
 		pX -= 1;
 	}
@@ -166,79 +170,65 @@ void Graphics::Render()
 		pY = 0;
 	}
 
+	//绘制地图
 	g_map->Show(pX, pY);
 
 
-	//绘制FPS
-	g_text->DrawFps(Getfps(),&wnd.clientRect,0xffffffff);
+	//绘制人物
+	g_player->Show();
 
-	//绘制鼠标
-	wchar_t pos[50] = {0};
-	wsprintf(pos, L"坐标：[%d,%d]", wnd.pt.x, wnd.pt.y);
-	g_text->Draw(pos, 0, 20, 800, 600, 0xffffffff);
-	
-	//绘制时间
-	wsprintf(pos, L"time：[%d]-[%d]", GTime::s_tNowTime,GTime::s_tPrevTime);
-	g_text->Draw(pos, 0, 40, 800, 600, 0xffffffff);
-
-	//屏幕宽高
-	wsprintf(pos, L"wh：[%d,%d]", static_cast<int>(wnd.mWidth), static_cast<int>(wnd.mHeight));
-	g_text->Draw(pos, 0, 80, 800, 600, 0xffffffff);
-
-	//人物坐标
-	wsprintf(pos, L"xy：[%d,%d]", pX,pY);
-	g_text->Draw(pos, 0, 100, 800, 600, 0xffffffff);
-
+	//--------------------------------------------------------------
+	//重置
+	D3DXMATRIX matWorld;
+	D3DXMatrixIdentity(&matWorld);
+	m_d3dDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	m_d3dDevice->SetTexture(0, NULL);
+	//--------------------------------------------------------------
+	//视图
+	g_camera->SetMatrices(wnd.mWidth, wnd.mHeight);
+	g_camera->SetTransform(GTime::GetCountDown());
+	//--------------------------------------------------------------
 	//画点列表
-	g_point->Draw();
-
-	//画线列表
-	g_line->Draw(400.0f,0.0f,400.0f,600.0f, 0xffffffff);
-	g_line->Draw(0.0f,300.0f,800.0f,300.0f, 0xffffffff);
-
-	
-	//蛟龙套装POS DOWN
-	g_line->Draw(195.0f,0.0f,195.0f,600.0f, 0xffffffff);
-	g_line->Draw(322.0f, 0.0f, 322.0f, 600.0f, 0xffffffff);
-
-	//画线列表
+	//g_point->Draw();
 
 	//画三角形
-	//g_triangle->Draw();
-
+	//g_triangle->Draw(100,100,0xffffffff);
 
 	//画3d三角形
 	//g_3dtriangle->Draw3D();
 	//g_3dtriangle->DrawIndex3D();
 
 	//KeyDown();
-
-
-	//绘图
-	//for (float i = 0; i < 800; i+=48)
-	//{
-	//	g_line->Draw(i, 0.0f, i, 600.0f, D3DCOLOR_RGBA(255,255,0,0));
-	//}
-
-	//for (float j = 0; j < 600; j += 32)
-	//{
-	//	g_line->Draw(0.0f, j, 800.0f, j, D3DCOLOR_RGBA(255, 0, 255, 0));
-	//}
-
-
-	//绘制人物
-	g_player->Show();
-
-	D3DXMATRIX matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	m_d3dDevice->SetTransform(D3DTS_WORLD, &matWorld);
-
-	m_d3dDevice->SetTexture(0, NULL);
-
-	
+	//--------------------------------------------------------------
+	wchar_t pos[50] = { 0 };
 	//绘制时间
 	wsprintf(pos, L"人物状态：s:%d,f:%d", g_player->mState, g_player->mFrame);
-	g_text->Draw(pos, 0, 60, 800, 600, 0x88ffffff);
+	g_text->Draw(pos, 0, 60, 800, 600, 0xffffffff);
+
+	//画线列表
+	g_line->Draw(400.0f, 0.0f, 400.0f, 600.0f, 0xffffffff);
+	g_line->Draw(0.0f, 300.0f, 800.0f, 300.0f, 0xffffffff);
+
+	//人物坐标
+	wsprintf(pos, L"xy：[%d,%d]", pX, pY);
+	g_text->Draw(pos, 380, 300, 800, 600, 0xffffffff);
+
+	//绘制FPS
+	g_text->DrawFps(Getfps(), &wnd.clientRect, 0xffffffff);
+
+	//绘制鼠标
+	wsprintf(pos, L"坐标：[%d,%d]", wnd.pt.x, wnd.pt.y);
+	g_text->Draw(pos, 0, 20, 800, 600, 0xffffffff);
+
+	//绘制时间
+	wsprintf(pos, L"time：[%d]-[%d]", GTime::s_tNowTime, GTime::s_tPrevTime);
+	g_text->Draw(pos, 0, 40, 800, 600, 0xffffffff);
+
+	//屏幕宽高
+	wsprintf(pos, L"wh：[%d,%d]", static_cast<int>(wnd.mWidth), static_cast<int>(wnd.mHeight));
+	g_text->Draw(pos, 0, 80, 800, 600, 0xffffffff);
+
+
 	//-----------------------------
 	m_d3dDevice->EndScene();
 
@@ -260,71 +250,4 @@ float Graphics::Getfps()
 		frameCount = 0;
 	}
 	return fps;
-}
-
-HUM_STATE tState = STAND;
-DIRECTION tDir = UP;
-void Graphics::KeyDown()
-{
-	///若数字键1被按下，进行线框填充WE
-	if (::GetAsyncKeyState(0x57) & 0x8000f) {
-		switch (tState)
-		{
-		case STAND:
-			tState = WALK;
-			break;
-		case WALK:
-			tState = RUN;
-			break;
-		case RUN:
-			tState = BATTLE_POS;
-			break;
-		case BATTLE_POS:
-			tState = ATTACK;
-			break;
-		case ATTACK:
-			tState = STAND;
-			break;
-		default:
-			break;
-		}
-		g_player->Load(tState, tDir);
-		g_player->mFrame = 0;
-	}
-
-	if (::GetAsyncKeyState(0x45) & 0x8000f) {
-		switch (tDir)
-		{
-		case UP:
-			tDir = RIGHT_UP;
-			break;
-		case RIGHT_UP:
-			tDir = RIGHT;
-			break;
-		case RIGHT:
-			tDir = RIGHT_DOWN;
-			break;
-		case RIGHT_DOWN:
-			tDir = DOWN;
-			break;
-		case DOWN:
-			tDir = LEFT_DOWN;
-			break;
-		case LEFT_DOWN:
-			tDir = LEFT;
-			break;
-		case LEFT:
-			tDir = LEFT_UP;
-			break;
-		case LEFT_UP:
-			tDir = UP;
-			break;
-		default:
-			break;
-		}
-		g_player->mFrame = 0;
-		g_player->Load(tState, tDir);
-	}
-
-
 }
