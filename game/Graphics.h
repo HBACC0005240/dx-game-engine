@@ -33,4 +33,5 @@ public:
 	HRESULT InitVertex();
 	void Render();
 	float Getfps();
+	void KeyDown();
 };

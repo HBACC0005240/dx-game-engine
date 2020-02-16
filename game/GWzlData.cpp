@@ -99,6 +99,14 @@ void GWzlData::LoadWzl(int wzx_sort, GWzlDraw* pDraw)
 	//获取wzl偏移值
 	int offset = 0;
 	pWzx->GetOffset(wzx_sort, &offset);
+	if (offset == 0)
+	{
+		wchar_t buf[200];
+		swprintf_s(buf, TEXT("索引[%d]读取图片为空\n"), wzx_sort);
+		OutputDebugString(buf);
+		fclose(fp);
+		return;
+	}
 
 	//指向图片结构体头部位置
 	fseek(fp, offset, SEEK_SET);

@@ -1,6 +1,6 @@
 #include "Graphics.h"
 //初始化
-int pX = 0, pY = 0;
+int pX = 340, pY = 255;
 bool keyW = false, keyA = false,keyS = false, keyD = false, keyQ = false, keyR = false;
 Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	OutputDebugString(L"Graphics()构造\n");
@@ -34,7 +34,7 @@ Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	g_player = new GPlayer(pWzlHum, 0, 0, m_d3dDevice);
 
 	//
-	char map[] = "20200216";
+	char map[] = "0";
 	g_map = new GMap(map, m_d3dDevice);
 }
 
@@ -142,33 +142,8 @@ void Graphics::Render()
 	m_d3dDevice->BeginScene();
 	//-----------------------------
 
-	//WASD
-	if (::GetAsyncKeyState(0x57) & 0x8000f) {
-		if (keyW)
-		{
-			pY -= 1;
-			keyW = false;
-		}
-	}
-	else {
-		keyW = true;
-	}
-
-	if (::GetAsyncKeyState(0x41) & 0x8000f) {
-		pX -= 1;
-	}
-	if (::GetAsyncKeyState(0x53) & 0x8000f) {
-		pY += 1;
-	}
-	if (::GetAsyncKeyState(0x44) & 0x8000f) {
-		pX += 1;
-	}
-	if (::GetAsyncKeyState(0x51) & 0x8000f) {
-		pX = 0;
-	}
-	if (::GetAsyncKeyState(0x45) & 0x8000f) {
-		pY = 0;
-	}
+	//按键
+	KeyDown();
 
 	//绘制地图
 	g_map->Show(pX, pY);
@@ -250,4 +225,76 @@ float Graphics::Getfps()
 		frameCount = 0;
 	}
 	return fps;
+}
+
+void Graphics::KeyDown()
+{
+	//W
+	if (::GetAsyncKeyState(0x57) & 0x8000f) {
+		if (keyW)
+		{
+			pY -= 1;
+			keyW = false;
+		}
+	}
+	else {
+		keyW = true;
+	}
+	//A
+	if (::GetAsyncKeyState(0x41) & 0x8000f) {
+		if (keyA)
+		{
+			pX -= 1;
+			keyA = false;
+		}
+	}
+	else {
+		keyA = true;
+	}
+
+	//S
+	if (::GetAsyncKeyState(0x53) & 0x8000f) {
+		if (keyS)
+		{
+			pY += 1;
+			keyS = false;
+		}
+	}
+	else {
+		keyS = true;
+	}
+	//D
+	if (::GetAsyncKeyState(0x44) & 0x8000f) {
+		if (keyD)
+		{
+			pX += 1;
+			keyD = false;
+		}
+	}
+	else {
+		keyD = true;
+	}
+	//Q
+	if (::GetAsyncKeyState(0x51) & 0x8000f) {
+		if (keyQ)
+		{
+			pX = 0;
+			keyQ = false;
+		}
+	}
+	else {
+		keyQ = true;
+	}
+	//R
+	if (::GetAsyncKeyState(0x45) & 0x8000f) {
+		if (keyR)
+		{
+			pY = 0;
+			keyR = false;
+		}
+	}
+	else {
+		keyR = true;
+	}
+
 }
