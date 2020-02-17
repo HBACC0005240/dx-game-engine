@@ -1,7 +1,8 @@
 #include "Graphics.h"
 //初始化
-int pX = 340, pY = 255;
+int pX = 323, pY = 293;
 bool keyW = false, keyA = false,keyS = false, keyD = false, keyQ = false, keyR = false;
+bool IS_KEY_DOWN = false;
 Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	OutputDebugString(L"Graphics()构造\n");
 	InitD3D();
@@ -30,12 +31,17 @@ Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	//char file[] = ".\\Data\\hum3";
 	//char file[] = ".\\Data\\items";
 	pWzlHum = new GWzlData(file);
-
 	g_player = new GPlayer(pWzlHum, 0, 0, m_d3dDevice);
 
-	//
+	//创建地图
 	char map[] = "0";
 	g_map = new GMap(map, m_d3dDevice);
+
+	//创建动画
+	char wzlfile[] = ".\\Data\\Objects";
+	pWzlAni = new GWzlData(wzlfile);
+	g_Ani = new GAnimation(2723, 10, pWzlAni,m_d3dDevice);
+	g_Ani->Load();
 }
 
 Graphics::~Graphics()
@@ -148,9 +154,15 @@ void Graphics::Render()
 	//绘制地图
 	g_map->Show(pX, pY);
 
+	//画线列表
+	g_line->Draw(400.0f, 250.0f, 400.0f, 350.0f, 0xffffffff);
+	g_line->Draw(350.0f, 300.0f, 450.0f, 300.0f, 0xffffffff);
 
 	//绘制人物
 	g_player->Show();
+
+	//绘制动画
+	g_Ani->Show(100,100);
 
 	//--------------------------------------------------------------
 	//重置
@@ -180,9 +192,7 @@ void Graphics::Render()
 	wsprintf(pos, L"人物状态：s:%d,f:%d", g_player->mState, g_player->mFrame);
 	g_text->Draw(pos, 0, 60, 800, 600, 0xffffffff);
 
-	//画线列表
-	g_line->Draw(400.0f, 0.0f, 400.0f, 600.0f, 0xffffffff);
-	g_line->Draw(0.0f, 300.0f, 800.0f, 300.0f, 0xffffffff);
+	
 
 	//人物坐标
 	wsprintf(pos, L"xy：[%d,%d]", pX, pY);
@@ -203,7 +213,9 @@ void Graphics::Render()
 	wsprintf(pos, L"wh：[%d,%d]", static_cast<int>(wnd.mWidth), static_cast<int>(wnd.mHeight));
 	g_text->Draw(pos, 0, 80, 800, 600, 0xffffffff);
 
-
+	//说明
+	g_text->Draw(L"移动：[W A S D] 移动 每次移动一格", 0, 100, 800, 600, 0xffffffff);
+	g_text->Draw(L"绘制：[F]-Tiles [G]-SmTiles [H]-Objects [J]-Animation [K]-坐标线", 0, 120, 800, 600, 0xffffffff);
 	//-----------------------------
 	m_d3dDevice->EndScene();
 
@@ -234,7 +246,7 @@ void Graphics::KeyDown()
 		if (keyW)
 		{
 			pY -= 1;
-			keyW = false;
+			keyW = IS_KEY_DOWN;
 		}
 	}
 	else {
@@ -245,7 +257,7 @@ void Graphics::KeyDown()
 		if (keyA)
 		{
 			pX -= 1;
-			keyA = false;
+			keyA = IS_KEY_DOWN;
 		}
 	}
 	else {
@@ -257,7 +269,7 @@ void Graphics::KeyDown()
 		if (keyS)
 		{
 			pY += 1;
-			keyS = false;
+			keyS = IS_KEY_DOWN;
 		}
 	}
 	else {
@@ -268,7 +280,7 @@ void Graphics::KeyDown()
 		if (keyD)
 		{
 			pX += 1;
-			keyD = false;
+			keyD = IS_KEY_DOWN;
 		}
 	}
 	else {
@@ -279,7 +291,7 @@ void Graphics::KeyDown()
 		if (keyQ)
 		{
 			pX = 0;
-			keyQ = false;
+			keyQ = IS_KEY_DOWN;
 		}
 	}
 	else {
@@ -290,7 +302,7 @@ void Graphics::KeyDown()
 		if (keyR)
 		{
 			pY = 0;
-			keyR = false;
+			keyR = IS_KEY_DOWN;
 		}
 	}
 	else {

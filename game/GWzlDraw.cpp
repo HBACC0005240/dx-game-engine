@@ -6,11 +6,13 @@ GWzlDraw::GWzlDraw(LPDIRECT3DDEVICE9 p_d3dDevice)
 {
 	m_d3dDevice = p_d3dDevice;
 	data = nullptr;
+	m_d3dBuffer = nullptr;
 }
 
 GWzlDraw::GWzlDraw()
 {
 	data = nullptr;
+	m_d3dBuffer = nullptr;
 }
 
 GWzlDraw::~GWzlDraw()
@@ -119,7 +121,7 @@ HRESULT GWzlDraw::CreateVectexRHW(int x, int y)
 }
 
 
-void GWzlDraw::Draw(int x,int y)
+void GWzlDraw::Draw(int x,int y,WZL_ALPHA mode)
 {
 	if (m_pTexture == nullptr){
 		return;
@@ -136,10 +138,18 @@ void GWzlDraw::Draw(int x,int y)
 	//绘制前要开启融合运算
 	m_d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
 
-	//设定融合因子，采用默认值
-	m_d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	m_d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-
+	if (mode == COLOR_ARGB)
+	{
+		//设定融合因子，采用默认值
+		m_d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		m_d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	}
+	else if (mode == COLOR_ONE)
+	{
+		//高光效果
+		m_d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+		m_d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+	}
 
 	m_d3dDevice->SetStreamSource(0, m_d3dBuffer, 0, sizeof(GTextureVertexRHW));
 	m_d3dDevice->SetFVF(GTextureVertexRHW::FVF);

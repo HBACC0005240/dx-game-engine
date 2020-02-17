@@ -158,9 +158,9 @@ LRESULT CALLBACK GameWind::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 	}
 	case WM_KEYDOWN:       //键盘消息
 	{
-		wsprintf(buf, L"键盘按下:%c\n", wParam);
-		OutputDebugString(buf);
-		gWnd->KeyDown((int)wParam);
+		//wsprintf(buf, L"键盘按下:%c\n", wParam);
+		//OutputDebugString(buf);
+		//gWnd->KeyDown((int)wParam);
 		break;
 	}
 	case WM_MOUSEMOVE:

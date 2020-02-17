@@ -2,6 +2,13 @@
 #include "Core.h"
 #include "GWzlOffset.h"
 
+//wzlͼƬ͸��ģʽ
+enum WZL_ALPHA
+{
+	COLOR_ARGB = 0,
+	COLOR_ONE = 1,
+};
+
 struct GTextureVertex
 {
 	float x, y, z;
@@ -296,7 +303,7 @@ public:
 	~GWzlDraw();
 	HRESULT CreateVectex(LPDIRECT3DDEVICE9 d3dDevice);
 	HRESULT CreateVectexRHW(int x, int y);
-	void Draw(int x, int y);
+	void Draw(int x, int y, WZL_ALPHA mode = COLOR_ARGB);
 	void DrawTexture(LPDIRECT3DDEVICE9 d3dDevice);
 	void CreateTexture();
 };

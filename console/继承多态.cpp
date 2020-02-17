@@ -50,7 +50,7 @@ void show(Animal* animal) {
 }
 
 
-int main() {
+int _main() {
 	//Animal* anm = new Animal("¶¯Îï");
 	//show(anm);
 
@@ -58,4 +58,6 @@ int main() {
 	show(anm1);
 
 	delete anm1;
+
+	return 0;
 }

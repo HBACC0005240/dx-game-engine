@@ -72,6 +72,9 @@
     <ClCompile Include="GMap.cpp">
       <Filter>源文件\Game</Filter>
     </ClCompile>
+    <ClCompile Include="GAnimation.cpp">
+      <Filter>源文件\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -126,6 +129,9 @@
       <Filter>头文件\Game</Filter>
     </ClInclude>
     <ClInclude Include="GMap.h">
+      <Filter>头文件\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GAnimation.h">
       <Filter>头文件\Game</Filter>
     </ClInclude>
   </ItemGroup>

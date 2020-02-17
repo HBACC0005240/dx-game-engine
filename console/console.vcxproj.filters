@@ -24,6 +24,9 @@
     <ClCompile Include="继承多态.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="调试unordered_map.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="类依赖构造.h">

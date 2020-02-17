@@ -1,12 +1,16 @@
 #include "GMap.h"
 #include <unordered_map>
 #include "DrawLine.h"
+#include "GAnimation.h"
 
 typedef std::unordered_map<int, GWzlDraw*> GDrawMap;
 typedef std::pair<int, GWzlDraw*> GDrwa;
 
+typedef std::unordered_map<int, GAnimation*> GAniMap;
+typedef std::pair<int, GAnimation*> GAni;
+
 //#include "DrawTriangle.h"
-GWzlData* Objects[5];
+GWzlData* Objects[6];
 GWzlData* Tiles;
 GWzlData* SmTiles;
 
@@ -16,7 +20,10 @@ GDrawMap g_TilesMap;
 //小地砖
 GDrawMap g_SmTilesMap;
 //物件
-GDrawMap g_Objects;
+GDrawMap g_Objects[6];
+
+//灯泡
+GAniMap g_Animation;
 
 //GWzlDraw* m_Draw;
 //GWzlDraw* m_Tiles;
@@ -33,6 +40,13 @@ struct POS
 };
 
 POS pos;
+POS map = { 48.0f,32.0f };
+
+bool keyF = false, keyFF = true;
+bool keyG = false, keyGG = true;
+bool keyH = false, keyHH = true;
+bool keyJ = false, keyJJ = true;
+bool keyK = false, keyKK = false;;
 
 GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice)
 {
@@ -109,147 +123,155 @@ void GMap::Show(int pX, int pY)
 	pos.y = pY;
 
 	//按索引绘制地图
-	int map_sort = 0;
-	int tiles_sort = 0;
-	int sm_tiles_sort = 0;
-	int object_sort = 0;
 	int width = m_MapHeader.width;
 	int height = m_MapHeader.height;
-	int file_area = 0;
-	int w = 48;
-	int h = 32;
 	int VIEW = 20;
-
 	int left	= pX - VIEW < 0 ? 0 : pX - VIEW;
 	int top		= pY - VIEW < 0 ? 0 : pY - VIEW;
 	int right	= pX + VIEW > width ? width : pX + VIEW;
-	int bottom	= pY + VIEW > height ? height : pY + VIEW;
-	RECT rect = { left,top,right,bottom };
+	int bottom	= pY + VIEW > height ? height : pY + VIEW + 20;
 
-	//int left = 0;
-	//int top = 0;
-	//int right = width;
-	//int bottom = height;
-
-	float offsetX = 0;
-	float offsetY = 0;
-	//GWzlDraw* m_Draw = new GWzlDraw[width * height];
-	
-#if 0
-
-	for (int x = left; x < right; x++)
-	{
-		offsetX = x * 48;
-		for (int y = top; y < bottom; y++)
-		{
-			map_sort = x * height + y;
-			//位与运算 0&1 = 0 去掉最高位
-			wzx_sort = (ms_MapInfo[map_sort].wFrImg & 0b0111111111111111) - 1;
-			//Tiles
-			wzx_sort_Tiles = (ms_MapInfo[map_sort].wBkImg & 0b0111111111111111) - 1;
-			//SmTiles
-			wzx_sort_SmTiles = (ms_MapInfo[map_sort].wMidImg & 0b0111111111111111) - 1;
-
-			//文件号 +1
-			file_area = ms_MapInfo[map_sort].btArea;
-
-			if (ms_MapInfo[map_sort].wMidImg > 0)
-			{
-				int i = 0;
-			}
-
-			if (wzx_sort_Tiles > 0) {
-				if (x%2 == 0 && y%2 ==0 )
-				{
-					int ww = 48;
-					int hh = 32;
-					//加载WzxData;
-					char szMapFile[100] = ".\\Data\\Tiles";
-
-					//加载WzlData
-					if (Tiles == nullptr){
-						Tiles = new GWzlData(szMapFile);
-					}
-
-					//初始化一个
-					GDrawMap::const_iterator got = g_TilesMap.find(wzx_sort_Tiles);
-					if ( got == g_TilesMap.end())
-					{
-						GWzlDraw* tTiles = new GWzlDraw(p_d3dDevice);
-						Tiles->LoadWzl(wzx_sort_Tiles, tTiles);
-						//offsetY = (y * hh - hh);
-						//tTiles->DrawTextureRHW(offsetX - tTiles->sImage.x + 400 - ww/2 - (pX * ww), offsetY - tTiles->sImage.y + 300 - hh/2 - (pY * hh));
-						tTiles->CreateTexture();
-						//GDrwa tDraw(wzx_sort_Tiles, tTiles);
-						g_TilesMap.insert(GDrwa(wzx_sort_Tiles, tTiles));
-					}
-					offsetY = (y * hh - hh);
-					offsetX = offsetX - g_TilesMap.at(wzx_sort_Tiles)->sImage.x + 400 - ww / 2 - (pX * ww);
-					offsetY = offsetY - g_TilesMap.at(wzx_sort_Tiles)->sImage.y + 300 - hh / 2 - (pY * hh);
-
-					g_TilesMap.at(wzx_sort_Tiles)->Draw(offsetX, offsetY);
-					//p_d3dDevice->EndScene();
-					//p_d3dDevice->Present(NULL, NULL, NULL, NULL);
-					//int i = 0;
-				}
-			}
-		}
-
-	}
-
-
-	for (int x = left; x < right; x++)
-	{
-		offsetX = x * 48;
-		for (int y = top; y < bottom; y++)
-		{
-			map_sort = x * height + y;
-			//位与运算 0&1 = 0 去掉最高位
-			wzx_sort = (ms_MapInfo[map_sort].wFrImg & 0b0111111111111111) - 1;
-			//Tiles
-			wzx_sort_Tiles = (ms_MapInfo[map_sort].wBkImg & 0b0111111111111111) - 1;
-			//SmTiles
-			wzx_sort_SmTiles = (ms_MapInfo[map_sort].wMidImg & 0b0111111111111111) - 1;
-
-			//文件号 +1
-			file_area = ms_MapInfo[map_sort].btArea;
-
-			if (ms_MapInfo[map_sort].wMidImg > 0)
-			{
-				int i = 0;
-			}
-
-			if (wzx_sort_SmTiles > 0 && true) {
-				//加载WzxData;
-				char szMapFile[100] = ".\\Data\\SmTiles";
-
-				//加载WzlData
-				if (SmTiles == nullptr) {
-					SmTiles = new GWzlData(szMapFile);
-				}
-
-				SmTiles->LoadWzl(wzx_sort_SmTiles, m_SmTiles);
-				offsetY = (y * 32 - m_SmTiles->sImage.height);
-				//m_SmTiles->DrawTextureRHW(offsetX - m_SmTiles->sImage.x + 400 - 24 - (pX * 48), offsetY - m_SmTiles->sImage.y + 300 - 16 - (pY * 32));
-				//m_SmTiles->DrawTextureRHW(offsetX - m_SmTiles->sImage.x + 400 - 24 - (pX * 48), offsetY - m_SmTiles->sImage.y + 300 - 16 - (pY * 32));
-
-				//p_d3dDevice->EndScene();
-				//p_d3dDevice->Present(NULL, NULL, NULL, NULL);
-				//int i = 0;
-			}
-		}
-
-	}
-#endif // 0
-
+	rect = { left,top,right,bottom };
 
 	//Tiles
+	if (keyFF)
+	{
+		DrawTiles();
+	}
+
+	//SmTiles
+	if (keyGG)
+	{
+		DrawSmTiles();
+	}
+	//Objects
+	if (keyHH)
+	{
+		DrawObjects();
+	}
+	//light
+	if (keyJJ)
+	{
+		DrawAnimation();
+	}
+	//line
+	if (keyKK)
+	{
+		DrawWorldLine();
+	}
+
+
+		//F
+	if (::GetAsyncKeyState(0x46) & 0x8000f) {
+		if (keyF)
+		{
+			keyFF = keyFF ? false : true;
+			keyF = false;
+		}
+	}
+	else {
+		keyF = true;
+	}
+
+	//G
+	if (::GetAsyncKeyState(0x47) & 0x8000f) {
+		if (keyG)
+		{
+			keyGG = keyGG ? false : true;
+			keyG = false;
+		}
+	}
+	else {
+		keyG = true;
+	}
+
+	//H
+	if (::GetAsyncKeyState(0x48) & 0x8000f) {
+		if (keyH)
+		{
+			keyHH = keyHH ? false : true;
+			keyH = false;
+		}
+		
+	}
+	else {
+		keyH = true;
+	}
+	
+	//J
+	if (::GetAsyncKeyState(0x4A) & 0x8000f) {
+		if (keyJ)
+		{
+			keyJJ = keyJJ ? false : true;
+			keyJ = false;
+		}
+	}
+	else {
+		keyJ = true;
+	}
+
+	//K
+	if (::GetAsyncKeyState(0x4B) & 0x8000f) {
+		if (keyK)
+		{
+			keyKK = keyKK ? false : true;
+			keyK = false;
+		}
+	}
+	else {
+		keyK = true;
+	}
+}
+
+bool GMap::GetWorldXY(float X, float Y,float& mX,float& mY, bool IsCenter)
+{
+	//(0,0)=>(24,16) (1,1)=>(72,48)
+	mX = X * 48.0f + 400.0f - (pos.x * 48.0f);
+	mY = Y * 32.0f + 300.0f - (pos.y * 32.0f);
+	if (IsCenter)
+	{
+		mX = mX - 24.0f;
+		mY = mY - 16.0f;
+	}
+
+	return true;
+}
+
+bool GMap::GetMapWorldXY(GWzlDraw* GDraw, float X, float Y, float& mX, float& mY)
+{
+	//(0,0)=>(24,16) (1,1)=>(72,48)
+	mX = X * map.x + 400.0f - (pos.x * map.x) - GDraw->sImage.x - map.x /2;
+	mY = Y * map.y + 300.0f - (pos.y * map.y) - GDraw->sImage.y - map.y /2 + 2* map.y - GDraw->sImage.height ;
+	return true;
+}
+
+bool GMap::GetLightWorldXY(float X, float Y, float& mX, float& mY)
+{
+	//(0,0)=>(24,16) (1,1)=>(72,48)
+	mX = X * 48.0f + 400.0f - (pos.x * 48.0f) - 24.0f;
+	mY = Y * 32.0f + 300.0f - (pos.y * 32.0f) - 16.0f;
+	return true;
+}
+
+void GMap::DrawTiles()
+{
+	//Tiles
+	float offsetX = 0, offsetY = 0;
+	int map_sort = 0;
+	int tiles_sort = 0;
+	int file_area = 0;
+
 	for (int x = rect.left; x < rect.right; x++)
 	{
 		for (int y = rect.top; y < rect.bottom; y++)
 		{
-			map_sort = x * height + y;
+			map_sort = x * m_MapHeader.height + y;
 			//位与运算 0&1 = 0 去掉最高位
+
+			if (x == 362 && y == 247)
+			{
+				int i = 0;
+			}
 
 			//Tiles
 			tiles_sort = (ms_MapInfo[map_sort].wBkImg & 0b0111111111111111) - 1;
@@ -262,8 +284,8 @@ void GMap::Show(int pX, int pY)
 			//文件号 +1
 			file_area = ms_MapInfo[map_sort].btArea;
 
-			if (tiles_sort > 0 && (x % 2 == 0 && y % 2 == 0)) {
-			
+			if (tiles_sort >= 0 && (x % 2 == 0 && y % 2 == 0)) {
+
 				//加载WzxData;
 				char szMapFile[100] = ".\\Data\\Tiles";
 
@@ -288,9 +310,68 @@ void GMap::Show(int pX, int pY)
 					g_TilesMap.insert(GDrwa(tiles_sort, tTiles));
 				}
 				GWzlDraw* tObject = g_TilesMap.at(tiles_sort);
-				//offsetY = (y * 32 - g_Objects.at(object_sort)->sImage.height);
-				//offsetX = offsetX + g_Objects.at(object_sort)->sImage.x;
-				//offsetY = offsetY + g_Objects.at(object_sort)->sImage.y;
+	
+				GetMapWorldXY(tObject, x, y, offsetX, offsetY);
+				tObject->Draw(offsetX, offsetY);
+			}
+		}
+
+	}
+}
+
+void GMap::DrawSmTiles()
+{
+	//SmTiles
+	float offsetX = 0, offsetY = 0;
+	int map_sort = 0;
+	int sm_tiles_sort = 0;
+	int file_area = 0;
+
+	for (int x = rect.left; x < rect.right; x++)
+	{
+		for (int y = rect.top; y < rect.bottom; y++)
+		{
+			map_sort = x * m_MapHeader.height + y;
+			//位与运算 0&1 = 0 去掉最高位
+
+			//Tiles
+			//tiles_sort = (ms_MapInfo[map_sort].wBkImg & 0b0111111111111111) - 1;
+			//SmTiles
+			sm_tiles_sort = (ms_MapInfo[map_sort].wMidImg & 0b0111111111111111) - 1;
+
+			//object
+			//object_sort = (ms_MapInfo[map_sort].wFrImg & 0b0111111111111111) - 1;
+
+			//文件号 +1
+			file_area = ms_MapInfo[map_sort].btArea;
+
+			if (sm_tiles_sort > 0) {
+
+				//加载WzxData;
+				char szMapFile[100] = ".\\Data\\SmTiles";
+
+				//加载WzlData
+				if (SmTiles == nullptr) {
+					SmTiles = new GWzlData(szMapFile);
+				}
+
+				//初始化一个
+				GDrawMap::const_iterator Smtilesit = g_SmTilesMap.find(sm_tiles_sort);
+				if (Smtilesit == g_SmTilesMap.end())
+				{
+					GWzlDraw* tTiles = new GWzlDraw(p_d3dDevice);
+					SmTiles->LoadWzl(sm_tiles_sort, tTiles);
+					if (tTiles->data == nullptr)
+					{
+						//跳过本次循环
+						delete tTiles;
+						continue;
+					}
+					tTiles->CreateTexture();
+					g_SmTilesMap.insert(GDrwa(sm_tiles_sort, tTiles));
+				}
+				GWzlDraw* tObject = g_SmTilesMap.at(sm_tiles_sort);
+
 				GetMapWorldXY(tObject, x, y, offsetX, offsetY);
 				tObject->Draw(offsetX, offsetY);
 				//p_d3dDevice->EndScene();
@@ -299,17 +380,28 @@ void GMap::Show(int pX, int pY)
 
 			}
 		}
-
 	}
+}
 
-
-	for (int x = left; x < right; x++)
+void GMap::DrawObjects()
+{
+	//Objects
+	float offsetX = 0, offsetY = 0;
+	int map_sort = 0;
+	int object_sort = 0;
+	int file_area = 0;
+	int light = 0;
+	for (int x = rect.left; x < rect.right; x++)
 	{
-		offsetX = x * 48;
-		for (int y = top; y < bottom; y++)
+		for (int y = rect.top; y < rect.bottom; y++)
 		{
-			map_sort = x * height + y;
+			map_sort = x * m_MapHeader.height + y;
 			//位与运算 0&1 = 0 去掉最高位
+
+			if (x == 338 && y == 254)
+			{
+				int i = 0;
+			}
 
 			//Tiles
 			//tiles_sort = (ms_MapInfo[map_sort].wFrImg & 0b0111111111111111) - 1;
@@ -319,15 +411,13 @@ void GMap::Show(int pX, int pY)
 			//object
 			object_sort = (ms_MapInfo[map_sort].wFrImg & 0b0111111111111111) - 1;
 
+			//light
+			light = (ms_MapInfo[map_sort].btAniFrame);
+
 			//文件号 +1
 			file_area = ms_MapInfo[map_sort].btArea;
 
-			if (ms_MapInfo[object_sort].wMidImg > 0)
-			{
-				int i = 0;
-			}
-
-			if (object_sort > 0 && true) {
+			if (object_sort > 0 && light == 0) {
 				//加载WzxData;
 				char szMapFile[100] = ".\\Data\\Objects";
 				if (ms_MapInfo[map_sort].btArea) {
@@ -341,8 +431,8 @@ void GMap::Show(int pX, int pY)
 				}
 
 				//初始化一个
-				GDrawMap::const_iterator objit = g_Objects.find(object_sort);
-				if (objit == g_Objects.end())
+				GDrawMap::const_iterator objit = g_Objects[file_area].find(object_sort);
+				if (objit == g_Objects[file_area].end())
 				{
 					GWzlDraw* tTiles = new GWzlDraw(p_d3dDevice);
 					Objects[file_area]->LoadWzl(object_sort, tTiles);
@@ -353,61 +443,104 @@ void GMap::Show(int pX, int pY)
 						continue;
 					}
 					tTiles->CreateTexture();
-					g_Objects.insert(GDrwa(object_sort, tTiles));
+					g_Objects[file_area].insert(GDrwa(object_sort, tTiles));
 				}
-				GWzlDraw* tObject = g_Objects.at(object_sort);
-				//offsetY = (y * 32 - g_Objects.at(object_sort)->sImage.height);
-				//offsetX = offsetX + g_Objects.at(object_sort)->sImage.x;
-				//offsetY = offsetY + g_Objects.at(object_sort)->sImage.y;
-				GetMapWorldXY(tObject,x, y,offsetX,offsetY);
-				tObject->Draw(offsetX, offsetY);
+				GWzlDraw* tObject = g_Objects[file_area].at(object_sort);
+				GetMapWorldXY(tObject, x, y - 1, offsetX, offsetY);
+				if (light){
+					tObject->Draw(offsetX, offsetY,COLOR_ONE);
+				}else {
+					tObject->Draw(offsetX, offsetY);
+				}
 				//p_d3dDevice->EndScene();
 				//p_d3dDevice->Present(NULL, NULL, NULL, NULL);
 				//int i = 0;
+			}
 
+			light = 0;
+		}
+
+	}
+}
+
+void GMap::DrawAnimation()
+{
+	//Objects
+	float offsetX = 0, offsetY = 0;
+	int map_sort = 0;
+	int light_sort = 0;
+	int object_sort = 0;
+	int file_area = 0;
+
+	for (int x = rect.left; x < rect.right; x++)
+	{
+		offsetX = x * 48;
+		for (int y = rect.top; y < rect.bottom; y++)
+		{
+			map_sort = x * m_MapHeader.height + y;
+			//位与运算 0&1 = 0 去掉最高位
+
+			if (x == 338 && y == 254)
+			{
+				int i = 0;
+			}
+
+			//Tiles
+			//tiles_sort = (ms_MapInfo[map_sort].wFrImg & 0b0111111111111111) - 1;
+			//SmTiles
+			//sm_tiles_sort = (ms_MapInfo[map_sort].wMidImg & 0b0111111111111111) - 1;
+
+			//object
+			object_sort = (ms_MapInfo[map_sort].wFrImg & 0b0111111111111111) - 1;
+			//aniFrame
+			light_sort = (ms_MapInfo[map_sort].btAniFrame);
+
+			//文件号 +1
+			file_area = ms_MapInfo[map_sort].btArea;
+
+			if (light_sort > 0 && object_sort > 0) {
+				//加载WzxData;
+				char szMapFile[100] = ".\\Data\\Objects";
+				if (file_area) {
+					sprintf_s(szMapFile, ".\\Data\\Objects%d", file_area + 1);
+				}
+
+				//加载WzlData
+				if (Objects[file_area] == nullptr)
+				{
+					Objects[file_area] = new GWzlData(szMapFile);
+				}
+
+				//初始化一个
+				GAniMap::const_iterator lightit = g_Animation.find(object_sort);
+				if (lightit == g_Animation.end())
+				{
+					GAnimation *tAni = new GAnimation(object_sort, 10, Objects[file_area], p_d3dDevice);
+					tAni->Load();
+					g_Animation.insert(GAni(object_sort, tAni));
+				}
+				GAnimation* tObject = g_Animation.at(object_sort);
+				GetLightWorldXY(x, y - 2, offsetX, offsetY);
+				tObject->Show(offsetX, offsetY);
+				//p_d3dDevice->EndScene();
+				//p_d3dDevice->Present(NULL, NULL, NULL, NULL);
+				//int i = 0;
 			}
 		}
 
 	}
-	//DrawWorldLine(&rect);
-	return;
-
-	//p_d3dDevice->EndScene();
-	//p_d3dDevice->Present(NULL, NULL, NULL, NULL);
 }
 
-bool GMap::GetWorldXY(float X, float Y,float& mX,float& mY, bool IsCenter)
-{
-	//(0,0)=>(24,16) (1,1)=>(72,48)
-	mX = X * 48.0f + 400.0f - (pos.x * 48.0f);
-	mY = Y * 32.0f + 300.0f - (pos.y * 32.0f);
-	if (IsCenter)
-	{
-		mX = mX - 24.0f;
-		mY = mY - 16.0f;
-	}
-
-	return true;
-}
-
-bool GMap::GetMapWorldXY(GWzlDraw* GDraw, float X, float Y, float& mX, float& mY)
-{
-	//(0,0)=>(24,16) (1,1)=>(72,48)
-	mX = X * 48.0f + 400.0f - (pos.x * 48.0f) - GDraw->sImage.x - 24.0f;
-	mY = Y * 32.0f + 300.0f - (pos.y * 32.0f) - GDraw->sImage.y - 16.0f + 32.0f - GDraw->sImage.height ;
-	return true;
-}
-
-void GMap::DrawWorldLine(RECT* rect) {
+void GMap::DrawWorldLine() {
 	float oX = 0, oY = 0, oX1 = 0, oY1 = 0;
-	for (int x = rect->left; x <= rect->right; x++)
+	for (int x = rect.left; x <= rect.right; x++)
 	{
 		GetWorldXY(x, 0, oX, oY, true);
 		oY1 = oY + m_MapHeader.height * 32.0f;
 		g_line->Draw(oX, oY, oX, oY1, 0xff00ffff);
 	}
 
-	for (int y = rect->top; y <= rect->bottom; y++)
+	for (int y = rect.top; y <= rect.bottom; y++)
 	{
 		GetWorldXY(0, y, oX, oY, true);
 		oX1 = oX + +m_MapHeader.width * 48.0f;

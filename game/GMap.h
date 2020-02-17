@@ -32,6 +32,7 @@ public:
 	MapHeader m_MapHeader;
 	MapInfo* ms_MapInfo;
 	std::vector<GWzlDraw*> g_Draw;
+	RECT rect;
 public:
 	GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice);
 	~GMap();
@@ -40,5 +41,10 @@ public:
 	//返回世界坐标系中心点实际坐标
 	static bool GetWorldXY(float X, float Y, float& mX, float& mY,bool IsCenter = false);
 	static bool GetMapWorldXY(GWzlDraw* GDraw, float X, float Y, float& mX, float& mY);
-	void DrawWorldLine(RECT* rect);
+	static bool GetLightWorldXY(float X, float Y, float& mX, float& mY);
+	void DrawTiles();
+	void DrawSmTiles();
+	void DrawObjects();
+	void DrawAnimation();
+	void DrawWorldLine();
 };

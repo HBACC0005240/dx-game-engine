@@ -9,6 +9,7 @@
 #include "GWzlData.h"
 #include "GPlayer.h"
 #include "GMap.h"
+#include "GAnimation.h"
 
 class Graphics {
 private:
@@ -22,9 +23,10 @@ public:
 	DrawGText* g_text;//文字对象
 	DrawTriangle* g_triangle;//三角形对象
 	DrawTriangle* g_3dtriangle;//三角形对象
-	GWzlData* pWzlHum;
+	GWzlData* pWzlHum,*pWzlAni;
 	GPlayer* g_player;
 	GMap* g_map;
+	GAnimation* g_Ani;
 public:
 	LPDIRECT3DDEVICE9 m_d3dDevice;//设备对象
 	Graphics(GameWind &wnd);
