@@ -1,7 +1,8 @@
 #include "Graphics.h"
 //初始化
-int pX = 323, pY = 293;
+int pX = 334, pY = 263;
 bool keyW = false, keyA = false,keyS = false, keyD = false, keyQ = false, keyR = false;
+//是否可以一直移动
 bool IS_KEY_DOWN = false;
 Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	OutputDebugString(L"Graphics()构造\n");
@@ -34,14 +35,16 @@ Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	g_player = new GPlayer(pWzlHum, 0, 0, m_d3dDevice);
 
 	//创建地图
-	char map[] = "0";
+	char map[] = "0109";
 	g_map = new GMap(map, m_d3dDevice);
 
 	//创建动画
-	char wzlfile[] = ".\\Data\\Objects";
-	pWzlAni = new GWzlData(wzlfile);
-	g_Ani = new GAnimation(2723, 10, pWzlAni,m_d3dDevice);
-	g_Ani->Load();
+	//char wzlfile[] = ".\\Data\\Objects";
+	//pWzlAni = new GWzlData(wzlfile);
+	//g_Ani = new GAnimation(2723, 10, pWzlAni,m_d3dDevice);
+	//g_Ani->Load();
+
+	//GWzlDraw::OpenSaveBmp();
 }
 
 Graphics::~Graphics()
@@ -132,7 +135,7 @@ HRESULT Graphics::InitVertex()
 	//g_3dtriangle->setIndices();
 
 	//加载图片
-	g_player->Load(RUN,DOWN);
+	g_player->Load(STAND,DOWN);
 
 	//加载地图
 	g_map->Load();
@@ -162,7 +165,7 @@ void Graphics::Render()
 	g_player->Show();
 
 	//绘制动画
-	g_Ani->Show(100,100);
+	//g_Ani->Show(100,100);
 
 	//--------------------------------------------------------------
 	//重置

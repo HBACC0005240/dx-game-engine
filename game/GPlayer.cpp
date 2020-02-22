@@ -44,7 +44,7 @@ void GPlayer::Show()
 		mFrame = 0;
 	}
 
-	m_DrawMap.at(mFrame)->Draw(375, 273);
+	m_DrawMap.at(mFrame)->Draw(375, 273, COLOR_ARGB);
 	//m_DrawMap.at(mFrame)->Draw(100, 273);
 	//m_DrawMap.at(mFrame)->Draw(150, 273);
 	//m_DrawMap.at(mFrame)->Draw(200, 273);

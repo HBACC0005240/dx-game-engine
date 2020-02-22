@@ -38,3 +38,7 @@
 /x64/Debug
 /.vs
 /console/x64/Debug
+/game/x64/Release
+/x64/Release
+/x64
+/dx-game-engine0217.zip

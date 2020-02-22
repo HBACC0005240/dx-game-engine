@@ -41,7 +41,7 @@ void GAnimation::Show(int x,int y)
 		m_farme = 0;
 	}
 
-	m_pDraw[m_farme].Draw(x, y,COLOR_ONE);
+	m_pDraw[m_farme].Draw(x, y,COLOR_LIGHT);
 
 	if (time.CountDown(150))
 	{

@@ -5,7 +5,7 @@
 //ศหฮ๏ืดฬฌรถพู
 enum HUM_STATE
 {
-	STAND = 6600,//4ึก ฟี4ึก
+	STAND = 0,//4ึก ฟี4ึก
 	WALK = STAND + 64,//6ึก ฟี2ึก
 	RUN = STAND + 128,//6ึก ฟี2ึก
 	BATTLE_POS = STAND + 192,//8ึก ฟี0ึก

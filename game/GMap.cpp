@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include "DrawLine.h"
 #include "GAnimation.h"
+#include "GPlayer.h"
 
 typedef std::unordered_map<int, GWzlDraw*> GDrawMap;
 typedef std::pair<int, GWzlDraw*> GDrwa;
@@ -14,6 +15,8 @@ GWzlData* Objects[6];
 GWzlData* Tiles;
 GWzlData* SmTiles;
 
+
+
 //大地砖 小地砖 物件
 //大地砖缓存容器
 GDrawMap g_TilesMap;
@@ -25,6 +28,10 @@ GDrawMap g_Objects[6];
 //灯泡
 GAniMap g_Animation;
 
+//人物资源
+GWzlData* pWzlHum;
+//人物
+GPlayer* g_player;
 //GWzlDraw* m_Draw;
 //GWzlDraw* m_Tiles;
 //GWzlDraw* m_SmTiles;
@@ -33,11 +40,11 @@ GAniMap g_Animation;
 DrawLine* g_line;
 
 //当前屏幕中心点坐标
-struct POS
-{
-	float x;
-	float y;
-};
+//struct POS
+//{
+//	float x;
+//	float y;
+//};
 
 POS pos;
 POS map = { 48.0f,32.0f };
@@ -46,7 +53,7 @@ bool keyF = false, keyFF = true;
 bool keyG = false, keyGG = true;
 bool keyH = false, keyHH = true;
 bool keyJ = false, keyJJ = true;
-bool keyK = false, keyKK = false;;
+bool keyK = false, keyKK = true;
 
 GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice)
 {
@@ -59,6 +66,7 @@ GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice)
 	{
 		Objects[i] = nullptr;
 	}
+	sprintf_s(m_MapFile, ".\\map\\%s.map", file);
 
 	//线
 	g_line = new DrawLine(p_d3dDevice);
@@ -66,15 +74,13 @@ GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice)
 	Tiles = nullptr;
 	SmTiles = nullptr;
 
-	//m_Draw = new GWzlDraw(p_d3dDevice);
-
-	//m_Tiles = new GWzlDraw();
-
-	//m_SmTiles = new GWzlDraw(p_d3dDevice);
-
-	//g_san = new DrawTriangle(d3dDevice);
-
-	sprintf_s(m_MapFile, ".\\map\\%s.map", file);
+	//加载人物图片
+	char humfile[] = ".\\Data\\hum";
+	//char file[] = ".\\Data\\hum2";
+	//char file[] = ".\\Data\\hum3";
+	//char file[] = ".\\Data\\items";
+	pWzlHum = new GWzlData(humfile);
+	g_player = new GPlayer(pWzlHum, 0, 0, p_d3dDevice);
 }
 
 GMap::~GMap()
@@ -82,7 +88,8 @@ GMap::~GMap()
 	delete[] Objects;
 	delete Tiles;
 	delete SmTiles;
-
+	delete pWzlHum;
+	delete g_player;
 	//delete m_Draw;
 	//delete m_Tiles;
 	//delete m_SmTiles;
@@ -90,6 +97,9 @@ GMap::~GMap()
 
 void GMap::Load()
 {
+	//人物初始化
+	g_player->Load(STAND, DOWN);
+
 	FILE* fp;
 	//读取wzx
 	fopen_s(&fp, m_MapFile, "r+b");
@@ -132,6 +142,11 @@ void GMap::Show(int pX, int pY)
 	int bottom	= pY + VIEW > height ? height : pY + VIEW + 20;
 
 	rect = { left,top,right,bottom };
+	//line
+	if (keyKK)
+	{
+		DrawWorldLine();
+	}
 
 	//Tiles
 	if (keyFF)
@@ -144,6 +159,9 @@ void GMap::Show(int pX, int pY)
 	{
 		DrawSmTiles();
 	}
+
+	//g_player->Show();
+
 	//Objects
 	if (keyHH)
 	{
@@ -154,14 +172,9 @@ void GMap::Show(int pX, int pY)
 	{
 		DrawAnimation();
 	}
-	//line
-	if (keyKK)
-	{
-		DrawWorldLine();
-	}
 
 
-		//F
+	//F
 	if (::GetAsyncKeyState(0x46) & 0x8000f) {
 		if (keyF)
 		{
@@ -223,27 +236,6 @@ void GMap::Show(int pX, int pY)
 	}
 }
 
-bool GMap::GetWorldXY(float X, float Y,float& mX,float& mY, bool IsCenter)
-{
-	//(0,0)=>(24,16) (1,1)=>(72,48)
-	mX = X * 48.0f + 400.0f - (pos.x * 48.0f);
-	mY = Y * 32.0f + 300.0f - (pos.y * 32.0f);
-	if (IsCenter)
-	{
-		mX = mX - 24.0f;
-		mY = mY - 16.0f;
-	}
-
-	return true;
-}
-
-bool GMap::GetMapWorldXY(GWzlDraw* GDraw, float X, float Y, float& mX, float& mY)
-{
-	//(0,0)=>(24,16) (1,1)=>(72,48)
-	mX = X * map.x + 400.0f - (pos.x * map.x) - GDraw->sImage.x - map.x /2;
-	mY = Y * map.y + 300.0f - (pos.y * map.y) - GDraw->sImage.y - map.y /2 + 2* map.y - GDraw->sImage.height ;
-	return true;
-}
 
 bool GMap::GetLightWorldXY(float X, float Y, float& mX, float& mY)
 {
@@ -311,7 +303,7 @@ void GMap::DrawTiles()
 				}
 				GWzlDraw* tObject = g_TilesMap.at(tiles_sort);
 	
-				GetMapWorldXY(tObject, x, y, offsetX, offsetY);
+				GetMapWorldXY(tObject, x, y + 2, offsetX, offsetY);
 				tObject->Draw(offsetX, offsetY);
 			}
 		}
@@ -391,6 +383,7 @@ void GMap::DrawObjects()
 	int object_sort = 0;
 	int file_area = 0;
 	int light = 0;
+
 	for (int x = rect.left; x < rect.right; x++)
 	{
 		for (int y = rect.top; y < rect.bottom; y++)
@@ -442,15 +435,30 @@ void GMap::DrawObjects()
 						delete tTiles;
 						continue;
 					}
+
+					//输出文件
+					//char file[100] = ".\\Bmp\\0.bmp";
+					//sprintf_s(file, ".\\Bmp\\%d.bmp", object_sort);
+					//tTiles->SaveBmp(file, tTiles->sImage.width, tTiles->sImage.height, tTiles->sImage.width * tTiles->sImage.height, tTiles->data);
+
+
 					tTiles->CreateTexture();
 					g_Objects[file_area].insert(GDrwa(object_sort, tTiles));
 				}
 				GWzlDraw* tObject = g_Objects[file_area].at(object_sort);
-				GetMapWorldXY(tObject, x, y - 1, offsetX, offsetY);
+				GetMapWorldXY(tObject, x, y + 1, offsetX, offsetY);
 				if (light){
-					tObject->Draw(offsetX, offsetY,COLOR_ONE);
-				}else {
 					tObject->Draw(offsetX, offsetY);
+				}else {
+					
+					if (pos.x == x && y > pos.y)
+					{
+						//g_player->Show();
+						tObject->Draw(offsetX, offsetY,COLOR_ARGB);
+					}
+					else {
+						tObject->Draw(offsetX, offsetY, COLOR_ARGB);
+					}
 				}
 				//p_d3dDevice->EndScene();
 				//p_d3dDevice->Present(NULL, NULL, NULL, NULL);
@@ -536,14 +544,38 @@ void GMap::DrawWorldLine() {
 	for (int x = rect.left; x <= rect.right; x++)
 	{
 		GetWorldXY(x, 0, oX, oY, true);
-		oY1 = oY + m_MapHeader.height * 32.0f;
+		oY1 = oY + m_MapHeader.height * map.y;
 		g_line->Draw(oX, oY, oX, oY1, 0xff00ffff);
 	}
 
 	for (int y = rect.top; y <= rect.bottom; y++)
 	{
 		GetWorldXY(0, y, oX, oY, true);
-		oX1 = oX + +m_MapHeader.width * 48.0f;
+		oX1 = oX + m_MapHeader.width * map.x;
 		g_line->Draw(oX, oY, oX1, oY, 0xff00ffff);
 	}
+}
+
+
+bool GMap::GetWorldXY(float X, float Y, float& mX, float& mY, bool IsCenter)
+{
+	//(0,0)=>(24,16) (1,1)=>(72,48)
+	mX = X * map.x + 400.0f - (pos.x * map.x);
+	mY = Y * map.y + 300.0f - (pos.y * map.y);
+	if (IsCenter)
+	{
+		mX = mX - map.x / 2;
+		mY = mY - map.y / 2;
+	}
+
+	return true;
+}
+
+//绘图 传递格子坐标，返回实际绘制左上角坐标
+bool GMap::GetMapWorldXY(GWzlDraw* GDraw, float X, float Y, float& mX, float& mY)
+{
+	//mx = 屏幕偏移 + （地图x * 格子宽度） - （人物x * 格子宽度） - （格子宽度/2）- 图像偏移x
+	mX = 400.0f + (X * map.x) - (pos.x * map.x) - (map.x / 2) - GDraw->sImage.x;
+	mY = 300.0f + (Y * map.y) - (pos.y * map.y) - (map.y / 2) - GDraw->sImage.y - GDraw->sImage.height;
+	return true;
 }

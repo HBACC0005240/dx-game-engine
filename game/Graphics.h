@@ -26,7 +26,7 @@ public:
 	GWzlData* pWzlHum,*pWzlAni;
 	GPlayer* g_player;
 	GMap* g_map;
-	GAnimation* g_Ani;
+	//GAnimation* g_Ani;
 public:
 	LPDIRECT3DDEVICE9 m_d3dDevice;//设备对象
 	Graphics(GameWind &wnd);

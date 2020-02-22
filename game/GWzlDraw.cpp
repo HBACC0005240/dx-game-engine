@@ -1,6 +1,6 @@
-#include "GWzlDraw.h"
+ï»¿#include "GWzlDraw.h"
 
-
+RGBQUAD GWzlDraw::aColors[256] = { 0 };
 
 GWzlDraw::GWzlDraw(LPDIRECT3DDEVICE9 p_d3dDevice)
 {
@@ -18,12 +18,12 @@ GWzlDraw::GWzlDraw()
 GWzlDraw::~GWzlDraw()
 {
 	wchar_t buf[50];
-	swprintf_s(buf, TEXT("~GWzlDraw()Îö¹¹ data => %p \n"), data);
+	swprintf_s(buf, TEXT("~GWzlDraw()ææ„ data => %p \n"), data);
 	OutputDebugString(buf);
 	delete data;
 }
 
-//´´½¨¶¥µã»º´æ
+//åˆ›å»ºé¡¶ç‚¹ç¼“å­˜
 float bei = 1.42f;
 HRESULT GWzlDraw::CreateVectex(LPDIRECT3DDEVICE9 p_d3dDevice)
 {
@@ -56,7 +56,7 @@ HRESULT GWzlDraw::CreateVectex(LPDIRECT3DDEVICE9 p_d3dDevice)
 	};
 
 
-	//´´½¨¶¥µã»º´æ
+	//åˆ›å»ºé¡¶ç‚¹ç¼“å­˜
 	if (FAILED(p_d3dDevice->CreateVertexBuffer(sizeof(Vertices), 0, GTextureVertex::FVF, D3DPOOL_DEFAULT, &m_d3dBuffer, NULL)))
 	{
 		return E_FAIL;
@@ -76,7 +76,7 @@ HRESULT GWzlDraw::CreateVectex(LPDIRECT3DDEVICE9 p_d3dDevice)
 	return S_OK;
 }
 
-//´´½¨¶¥µã»º´æ
+//åˆ›å»ºé¡¶ç‚¹ç¼“å­˜
 float bei2 = 1.0f;
 HRESULT GWzlDraw::CreateVectexRHW(int x, int y)
 {
@@ -86,12 +86,12 @@ HRESULT GWzlDraw::CreateVectexRHW(int x, int y)
 		//return S_OK;
 	}
 
+	float tWidth = sImage.width * bei2;
+	float tHeight = sImage.height * bei2;
 
-	float tWidth = sImage.width * bei2 + 1;
-	float tHeight = sImage.height * bei2 + 1;
-
-	float wof2 = x + sImage.x;
-	float hof2 = y + sImage.y;
+	//D3D9 é¡¶ç‚¹ç¼“å­˜è¯¯å·®  x=0 å®é™…ä¸Šæ˜¯ä» -0.5 å¼€å§‹ å¤šäº†ç¬¬ä¸€è¡Œç¬¬ä¸€åˆ—
+	float wof2 = x + sImage.x - 0.5f;
+	float hof2 = y + sImage.y - 0.5f;
 
 	tWidth = tWidth + wof2;
 	tHeight = tHeight + hof2;
@@ -104,8 +104,50 @@ HRESULT GWzlDraw::CreateVectexRHW(int x, int y)
 	};
 
 
-	//´´½¨¶¥µã»º´æ
+	//åˆ›å»ºé¡¶ç‚¹ç¼“å­˜
 	if (FAILED(m_d3dDevice->CreateVertexBuffer(sizeof(Vertices), 0, GTextureVertexRHW::FVF, D3DPOOL_DEFAULT, &m_d3dBuffer, NULL)))
+	{
+		return E_FAIL;
+	}
+
+	VOID* pVertices;
+	if (FAILED(m_d3dBuffer->Lock(0, sizeof(Vertices), &pVertices, 0))) {
+		return E_FAIL;
+	}
+	memcpy(pVertices, Vertices, sizeof(Vertices));
+	m_d3dBuffer->Unlock();
+
+	return S_OK;
+}
+
+//åˆ›å»ºé¡¶ç‚¹ç¼“å­˜
+HRESULT GWzlDraw::CreateVectexRHW2(int x, int y)
+{
+	if (m_d3dBuffer)
+	{
+		m_d3dBuffer->Release();
+		//return S_OK;
+	}
+
+	float tWidth = sImage.width;
+	float tHeight = sImage.height;
+
+	//D3D9 é¡¶ç‚¹ç¼“å­˜è¯¯å·®  x=0 å®é™…ä¸Šæ˜¯ä» -0.5 å¼€å§‹ å¤šäº†ç¬¬ä¸€è¡Œç¬¬ä¸€åˆ—
+	float wof2 = x + sImage.x - 0.5f;
+	float hof2 = y + sImage.y - 0.5f;
+	
+	tWidth = tWidth + wof2;
+	tHeight = tHeight + hof2;
+
+	GTextureVertexRHW2 Vertices[] = {
+		{  wof2 ,   tHeight, 0.0f, 1.0f, 0xffffffff, 0.0f, 1.0f},
+		{  wof2,    hof2,	 0.0f, 1.0f, 0xffffffff, 0.0f, 0.0f},
+		{  tWidth,  tHeight, 0.0f, 1.0f, 0xffffffff, 1.0f, 1.0f},
+		{  tWidth,  hof2,	 0.0f, 1.0f, 0xffffffff, 1.0f, 0.0f},
+	};
+
+	//åˆ›å»ºé¡¶ç‚¹ç¼“å­˜
+	if (FAILED(m_d3dDevice->CreateVertexBuffer(sizeof(Vertices), 0, GTextureVertexRHW2::FVF, D3DPOOL_DEFAULT, &m_d3dBuffer, NULL)))
 	{
 		return E_FAIL;
 	}
@@ -126,33 +168,38 @@ void GWzlDraw::Draw(int x,int y,WZL_ALPHA mode)
 	if (m_pTexture == nullptr){
 		return;
 	}
-	//Æ½ÒÆ¾ØÕó
+	//å¹³ç§»çŸ©é˜µ
 	//D3DXMATRIX sXYZ;
 	//D3DXMatrixTranslation(&sXYZ, 10, 1, 1);
 	//m_d3dDevice->SetTransform(D3DTS_WORLD, &sXYZ);
-	CreateVectexRHW(x, y);
+	CreateVectexRHW2(x, y);
 
-	//ÉèÖÃÌùÍ¼	
+	//è®¾ç½®è´´å›¾	
 	m_d3dDevice->SetTexture(0, m_pTexture);
 
-	//»æÖÆÇ°Òª¿ªÆôÈÚºÏÔËËã
-	m_d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
 
 	if (mode == COLOR_ARGB)
 	{
-		//Éè¶¨ÈÚºÏÒò×Ó£¬²ÉÓÃÄ¬ÈÏÖµ
+		//ç»˜åˆ¶å‰è¦å¼€å¯èåˆè¿ç®—
+		m_d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+		//è®¾å®šèåˆå› å­ï¼Œé‡‡ç”¨é»˜è®¤å€¼
 		m_d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 		m_d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	}
-	else if (mode == COLOR_ONE)
-	{
-		//¸ß¹âĞ§¹û
+	else if (mode == COLOR_LIGHT)
+	{		
+		//ç»˜åˆ¶å‰è¦å¼€å¯èåˆè¿ç®—
+		m_d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+		//é«˜å…‰æ•ˆæœ
 		m_d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 		m_d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 	}
+	else {
+		m_d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
+	}
 
-	m_d3dDevice->SetStreamSource(0, m_d3dBuffer, 0, sizeof(GTextureVertexRHW));
-	m_d3dDevice->SetFVF(GTextureVertexRHW::FVF);
+	m_d3dDevice->SetStreamSource(0, m_d3dBuffer, 0, sizeof(GTextureVertexRHW2));
+	m_d3dDevice->SetFVF(GTextureVertexRHW2::FVF);
 	m_d3dDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 }
 
@@ -168,14 +215,14 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 	HRESULT hr = S_OK;
 	hr = D3DXCreateSprite(d3dDevice, &pSprite);
 
-	///´´½¨ÌùÍ¼
+	///åˆ›å»ºè´´å›¾
 	D3DFORMAT fmt = sImage.pixelFormat == 3 ? D3DFMT_A8R8G8B8 : D3DFMT_R5G6B5;
 	hr = d3dDevice->CreateTexture(sImage.width, sImage.height, 0, D3DUSAGE_DYNAMIC, fmt, D3DPOOL_DEFAULT, &pTexture, NULL);
 
-	//»ñÈ¡±íÃæĞÅÏ¢
+	//è·å–è¡¨é¢ä¿¡æ¯
 	pTexture->GetLevelDesc(0,&m_d3dSurfaceDesc);
 
-	///±íÃæÊı¾İ
+	///è¡¨é¢æ•°æ®
 	D3DLOCKED_RECT lockRect;
 	pTexture->LockRect(0,&lockRect, 0, 0);
 
@@ -200,9 +247,9 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 				UINT index = i * lockRect.Pitch / 4 + j;
 				UINT sort = ((m_d3dSurfaceDesc.Height - 1) - i) * m_d3dSurfaceDesc.Width + j;
 
-				byte  r = m_color[data[sort]].peRed;
-				byte  g = m_color[data[sort]].peGreen;
-				byte  b = m_color[data[sort]].peBlue;
+				byte  r = m_color[data[sort]].rgbRed;
+				byte  g = m_color[data[sort]].rgbGreen;
+				byte  b = m_color[data[sort]].rgbBlue;
 				if (r != 0 && g != 0 && b != 0)
 				{
 					imageData3[index] = D3DCOLOR_ARGB(0xff,r, g, b);
@@ -225,7 +272,7 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 
 		}
 	}
-	//½âËø
+	//è§£é”
 	pTexture->UnlockRect(0);
 
 
@@ -240,18 +287,18 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 	//pSprite->End();
 
 	//pSprite->Release();
-	//µ¥Î»»¯ÊÀ½ç¾ØÕó
+	//å•ä½åŒ–ä¸–ç•ŒçŸ©é˜µ
 	//D3DXMATRIX matWorld;
 	//D3DXMatrixIdentity(&matWorld);
 
-	////Ëõ·Å
+	////ç¼©æ”¾
 	//D3DXMATRIX scale;
 	//float bei = 1.6f;
 	//float tWidth = sImage.width / 100.0f * bei;
 	//float tHeight = sImage.height / 100.0f * bei;
 	//D3DXMatrixScaling(&scale, tWidth, tHeight, 0.0f);
 
-	////Æ½ÒÆ
+	////å¹³ç§»
 	//float pyX = -0.55f,pyY = 0.2f;
 	//float tX = (sImage.x / 100.0f * bei) + pyX;
 	//float tY = (sImage.y / 100.0f * bei) + pyY;
@@ -266,10 +313,10 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 
 	d3dDevice->SetTexture(0, pTexture);
 
-	//»æÖÆÇ°Òª¿ªÆôÈÚºÏÔËËã
+	//ç»˜åˆ¶å‰è¦å¼€å¯èåˆè¿ç®—
 	d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
 
-	//Éè¶¨ÈÚºÏÒò×Ó£¬²ÉÓÃÄ¬ÈÏÖµ
+	//è®¾å®šèåˆå› å­ï¼Œé‡‡ç”¨é»˜è®¤å€¼
 	d3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	d3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
@@ -283,26 +330,28 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 	}
 }
 
+
 void GWzlDraw::CreateTexture()
 {
+
 	if (data == nullptr)
 	{
 		return;
 	}
 	LPDIRECT3DTEXTURE9 pTexture = NULL;
-	LPDIRECT3DSURFACE9 m_d3dSurface = nullptr;
+	//LPDIRECT3DSURFACE9 m_d3dSurface = nullptr;
 	D3DSURFACE_DESC m_d3dSurfaceDesc = {};
 
 	HRESULT hr = S_OK;
 
-	///´´½¨ÌùÍ¼
+	///åˆ›å»ºè´´å›¾
 	D3DFORMAT fmt = sImage.pixelFormat == 3 ? D3DFMT_A8R8G8B8 : D3DFMT_R5G6B5;
 	hr = m_d3dDevice->CreateTexture(sImage.width, sImage.height, 0, D3DUSAGE_DYNAMIC, fmt, D3DPOOL_DEFAULT, &pTexture, NULL);
 
-	//»ñÈ¡±íÃæĞÅÏ¢
+	//è·å–è¡¨é¢ä¿¡æ¯
 	pTexture->GetLevelDesc(0, &m_d3dSurfaceDesc);
 
-	///±íÃæÊı¾İ
+	///è¡¨é¢æ•°æ®
 	D3DLOCKED_RECT lockRect;
 	pTexture->LockRect(0, &lockRect, 0, 0);
 
@@ -322,21 +371,27 @@ void GWzlDraw::CreateTexture()
 		imageData5 = (SHORT*)lockRect.pBits;
 	}
 
+	//è·å–è°ƒè‰²æ¿
+	//OpenRGB();
+
 	for (UINT h = 0; h < height; h++)
 	{
 		for (UINT w = 0; w < width; w++)
 		{
 			if (sImage.pixelFormat == 3) {
-				//Êı¾İ µÚÒ»ĞĞ ÊÇÍ¼Æ¬µÄ×îºóÒ»ĞĞ Êı¾İ´ÓÉÏÍùÏÂ¶ÁÈ¡
+				//æ•°æ® ç¬¬ä¸€è¡Œ æ˜¯å›¾ç‰‡çš„æœ€åä¸€è¡Œ æ•°æ®ä»ä¸Šå¾€ä¸‹è¯»å–
 				//D3DFMT_A8R8G8B8
 				sort = (h * width) + w;
-				byte  r = m_color[data[sort]].peRed;
-				byte  g = m_color[data[sort]].peGreen;
-				byte  b = m_color[data[sort]].peBlue;
+				BYTE  r = p_color[data[sort]].peRed;
+				BYTE  g = p_color[data[sort]].peGreen;
+				BYTE  b = p_color[data[sort]].peBlue;
+				//BYTE  r = aColors[data[sort]].rgbRed;
+				//BYTE  g = aColors[data[sort]].rgbGreen;
+				//BYTE  b = aColors[data[sort]].rgbBlue;
 				DWORD color = D3DCOLOR_ARGB(0xff, r, g, b);
 				//index = (height - h) * width + w;
 
-				//Í¼Æ¬Êı×é »æÖÆ´ÓÏÂÍùÉÏ
+				//å›¾ç‰‡æ•°ç»„ ç»˜åˆ¶ä»ä¸‹å¾€ä¸Š
 				UINT index = (height - 1 - h) * lockRect.Pitch / 4 + w;
 				if (color != 0xff000000)
 				{
@@ -360,7 +415,7 @@ void GWzlDraw::CreateTexture()
 		}
 	}
 		
-	//½âËø
+	//è§£é”
 	pTexture->UnlockRect(0);
 
 	//-------------------------------------
@@ -368,7 +423,7 @@ void GWzlDraw::CreateTexture()
 
 		LPDIRECT3DTEXTURE9 dstTexture = NULL;
 
-		//ĞÂ½¨Ò»¸öD3DFMT_A8R8G8B8
+		//æ–°å»ºä¸€ä¸ªD3DFMT_A8R8G8B8
 		IDirect3DSurface9* m_srcD3dSurface;
 		IDirect3DSurface9* m_dstD3dSurface;
 
@@ -387,7 +442,7 @@ void GWzlDraw::CreateTexture()
 		D3DSURFACE_DESC d3ddesc;
 		m_dstD3dSurface->GetDesc(&d3ddesc);
 
-		///±íÃæÊı¾İ
+		///è¡¨é¢æ•°æ®
 		D3DLOCKED_RECT lockr = {0};
 		m_dstD3dSurface->LockRect(&lockr, 0, 0);
 		DWORD* imageData33 = (DWORD*)lockr.pBits;
@@ -412,4 +467,130 @@ void GWzlDraw::CreateTexture()
 	else {
 		m_pTexture = pTexture;
 	}
+}
+
+void GWzlDraw::OpenRGB() {
+
+	if (aColors[1].rgbRed != 0){
+		return;
+	}
+	FILE* fp;
+	//è¯»å–è°ƒè‰²æ¿
+	fopen_s(&fp, "RGBQUAD.dat", "r+b");
+	fread(&aColors, sizeof(aColors), 1, fp);
+	fclose(fp);
+}
+
+struct 	BitMapLine
+{
+	BYTE colorIndex;
+};
+
+void GWzlDraw::OpenSaveBmp()
+{
+	FILE *fp;
+
+	fopen_s(&fp, "1.bmp", "r+b");
+
+	BITMAPFILEHEADER head;
+	BITMAPINFOHEADER info;
+	RGBQUAD aColors[256] = {0};
+
+
+	//å¤´éƒ¨ç»“æ„
+	fread(&head, sizeof(BITMAPFILEHEADER), 1, fp);
+
+	//å›¾ç‰‡ç»“æ„
+	fseek(fp, sizeof(BITMAPFILEHEADER), SEEK_SET);
+	fread(&info, sizeof(BITMAPINFOHEADER), 1, fp);
+
+
+	//è°ƒè‰²æ¿
+	fseek(fp, sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER), SEEK_SET);
+	fread(&aColors, sizeof(aColors), 1, fp);
+
+	//å›¾ç‰‡æ•°æ®
+	BitMapLine* lines = nullptr;
+	lines = new BitMapLine[info.biSizeImage];
+
+	//è¯»å–æ•°æ®
+	fseek(fp, head.bfOffBits, SEEK_SET);
+	fread(lines, info.biSizeImage, 1, fp);
+
+	fclose(fp);
+
+	//å†™å‡ºæ–‡ä»¶
+
+	fopen_s(&fp, "RGBQUAD.dat", "wb");
+
+	//BITMAPFILEHEADER bitHeader = { 0x4d42,54 + sizeof(RGBQUAD) * 256,0,0,1078 };
+	//BITMAPINFOHEADER bitInfo = { 40,info.biWidth,info.biHeight,1,8,0,info.biSizeImage,0,0,256,0 };
+
+	BITMAPFILEHEADER header;
+	header.bfType = 0x4D42;
+	header.bfSize = head.bfSize;
+	header.bfReserved1 = 0;
+	header.bfReserved2 = 0;
+	header.bfOffBits = head.bfOffBits;
+
+	BITMAPINFOHEADER tinfo;
+	tinfo.biSize = sizeof(BITMAPINFOHEADER);
+	tinfo.biWidth = info.biWidth;
+	tinfo.biHeight = info.biHeight;
+	tinfo.biPlanes = 1;
+	tinfo.biBitCount = 8;
+	tinfo.biCompression = 0;
+	tinfo.biSizeImage = info.biSizeImage;
+	tinfo.biXPelsPerMeter = 0;
+	tinfo.biYPelsPerMeter = 0;
+	tinfo.biClrUsed = 256;
+	tinfo.biClrImportant = 0;
+
+	//fwrite(&header, sizeof(BITMAPFILEHEADER), 1, fp);
+	//fwrite(&tinfo, sizeof(BITMAPINFOHEADER), 1, fp);
+	fwrite(&aColors, sizeof(aColors), 1, fp); 
+	//fwrite(lines, info.biSizeImage, 1, fp);
+	
+	fclose(fp);
+}
+
+void GWzlDraw::SaveBmp(char file[],int biWidth,int biHeight, int bmpDataSize, BYTE *bmpData)
+{
+	FILE* fp;
+	RGBQUAD tColors[256] = { 0 };
+
+	//è¯»å–è°ƒè‰²æ¿
+	fopen_s(&fp, "RGBQUAD.dat", "r+b");
+	fread(&tColors, sizeof(tColors), 1, fp);
+	fclose(fp);
+
+	//å†™å‡ºæ–‡ä»¶
+	fopen_s(&fp, file, "wb");
+
+	BITMAPFILEHEADER header;
+	header.bfType = 0x4D42;
+	header.bfSize = bmpDataSize + 1078;//å›¾ç‰‡æ€»å¤§å°(å¤´éƒ¨+æ•°æ®)
+	header.bfReserved1 = 0;
+	header.bfReserved2 = 0;
+	header.bfOffBits = 1078;//æ•´ä¸ªå›¾ç‰‡æ•°æ®çš„åç§»(å¤´éƒ¨+å›¾ç»“æ„+è°ƒè‰²æ¿)
+
+	BITMAPINFOHEADER tinfo;
+	tinfo.biSize = sizeof(BITMAPINFOHEADER);
+	tinfo.biWidth = biWidth;//å›¾ç‰‡å®½åº¦
+	tinfo.biHeight = biHeight;//å›¾ç‰‡é«˜åº¦
+	tinfo.biPlanes = 1;
+	tinfo.biBitCount = 8;
+	tinfo.biCompression = 0;
+	tinfo.biSizeImage = bmpDataSize;
+	tinfo.biXPelsPerMeter = 0;
+	tinfo.biYPelsPerMeter = 0;
+	tinfo.biClrUsed = 256;
+	tinfo.biClrImportant = 0;
+
+	fwrite(&header, sizeof(BITMAPFILEHEADER), 1, fp);
+	fwrite(&tinfo, sizeof(BITMAPINFOHEADER), 1, fp);
+	fwrite(&tColors, sizeof(tColors), 1, fp);
+	fwrite(bmpData, bmpDataSize, 1, fp);
+
+	fclose(fp);
 }

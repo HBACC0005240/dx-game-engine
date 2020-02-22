@@ -46,7 +46,7 @@ GameWind::GameWind(HINSTANCE hInstacne, float width, float height)
 
 	//3、计算客户区大小
 	wcRect = { 0,0,0,0 };
-	int mX = 100, mY = 100;
+	int mX = 10, mY = 40;
 	SetRect(&wcRect, mX, mY, static_cast<int>(mWidth) + mX, static_cast<int>(mHeight) + mY);
 	AdjustWindowRect(&wcRect, WS_OVERLAPPEDWINDOW, false);
 
