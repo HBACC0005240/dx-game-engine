@@ -1,5 +1,5 @@
 #include "GameWind.h"
-
+#include "resource.h"
 const wchar_t* GameWind::wndClassName = L"Game v2.0";
 POINT GameWind::pt = {0,0};
 
@@ -34,7 +34,7 @@ GameWind::GameWind(HINSTANCE hInstacne, float width, float height)
 	wc.cbWndExtra = 0;										//窗口额外的内存，通常为零
 	wc.hbrBackground = NULL;// (HBRUSH)GetStockObject(BLACK_BRUSH);	//设置背景
 	wc.hCursor = LoadCursor(NULL, IDC_HAND);				//设置光标，如果第一个参数为NULL，代表使用系统提供的默认光标
-	wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);					//LOGO
+	wc.hIcon = LoadIcon(hInstacne, MAKEINTRESOURCE(IDI_ICON1));					//LOGO
 	wc.hInstance = mhInstance;								//当前实例句柄，WinMain函数中形参即可
 	wc.lpfnWndProc = GameWind::WindowProc;							//窗口过程函数，回调函数，名称可以随便起
 	wc.lpszClassName = wndClassName;							//指定窗口类名

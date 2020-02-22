@@ -35,7 +35,7 @@ Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	g_player = new GPlayer(pWzlHum, 0, 0, m_d3dDevice);
 
 	//创建地图
-	char map[] = "0109";
+	char map[] = "0";
 	g_map = new GMap(map, m_d3dDevice);
 
 	//创建动画
