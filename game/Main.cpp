@@ -4,7 +4,7 @@
 
 bool func1(int key) {
 	wchar_t buf[50];
-	swprintf_s(buf, TEXT("按键：%c"), key);
+	swprintf_s(buf, TEXT("按键：%d\n"), key);
 	OutputDebugString(buf);
 	return false;
 }
@@ -19,7 +19,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			//throw AHLIN::Exception(L"文件", 10,L"aaa");
 			Game game(*g_wnd);
 
-			g_wnd->KeyDown = func1;
+			//由Game对象接收按键事件
+			//g_wnd->KeyBoard = Game::KeyBoard;
+			//g_wnd->keyMouse = Game::keyMouse;
 
 			//初始化
 			game.Init();

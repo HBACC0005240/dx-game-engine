@@ -5,11 +5,17 @@
 //ศหฮ๏ืดฬฌรถพู
 enum HUM_STATE
 {
-	STAND = 0,//4ึก ฟี4ึก
-	WALK = STAND + 64,//6ึก ฟี2ึก
-	RUN = STAND + 128,//6ึก ฟี2ึก
-	ATTACK_POS = STAND + 192,//8ึก ฟี0ึก
-	ATTACK = ATTACK_POS + 8,//6ึก ฟี2ึก
+	STAND		= 0,//4ึก ฟี4ึก
+	WALK		= STAND + 64,//6ึก ฟี2ึก
+	RUN			= WALK + 64,//6ึก ฟี2ึก
+	ATTACK_POS	= RUN + 64,//8ึก ฟี0ึก
+	ATTACK		= ATTACK_POS + 8,//6ึก ฟี2ึก[ตฅสึนฅป๗]
+	ATTACK2		= ATTACK + 64,//6ึก ฟี2ึก[อฺฟ๓]
+	ATTACK3		= ATTACK2 + 64,//8ึก ฟี0ึก[ฬ๘ฟณ]
+	SPELLS		= ATTACK3 + 64,//6ึก ฟี2ึก[สฉทจ]
+	DIG_MEAT	= SPELLS + 64,//2ึก ฟี0ึก[อฺศโ]
+	INJURED		= DIG_MEAT + 16,//3ึก ฟี5ึก[สÜษห]
+	DEATH		= INJURED + 64,//4ึก ฟี4ึก[สÜษห]
 };
 
 //ศหฮ๏ทฝฯ๒รถพู 0~7
@@ -23,6 +29,12 @@ enum DIRECTION
 	LEFT_DOWN = 5,
 	LEFT = 6,
 	LEFT_UP = 7,
+};
+
+struct DIR_ANGLE
+{
+	float begin = 0.0f;
+	float end = 0.0f;
 };
 
 //Wzlอผฦฌะลฯขฝแนน

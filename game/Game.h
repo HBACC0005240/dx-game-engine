@@ -10,5 +10,6 @@ public:
 	~Game();
 	void Init();
 	void Run();
-	bool KeyDown(int key);
+	static bool KeyBoard(char key, BUTTON_KEY bk);
+	static bool keyMouse(int x, int y, BUTTON_KEY bk);
 };

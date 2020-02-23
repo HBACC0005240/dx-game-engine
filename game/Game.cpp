@@ -28,10 +28,44 @@ void Game::Run()
 	GTime::over();
 }
 
-bool Game::KeyDown(int key)
+bool Game::keyMouse(int x, int y, BUTTON_KEY bk)
 {
-	wchar_t buf[50];
-	swprintf_s(buf, TEXT("按键：%c"), key);
+	wchar_t buf[50] = { 0 };
+	switch (bk)
+	{
+	case L_BUTTON_DOWN:
+		swprintf_s(buf, TEXT("左键按下：%d,%d\n"), x, y);
+		break;
+	case L_BUTTON_UP:
+		swprintf_s(buf, TEXT("左键弹起：%d,%d\n"), x, y);
+		break;
+	case R_BUTTON_DOWN:
+		swprintf_s(buf, TEXT("右键按下：%d,%d\n"), x, y);
+		break;
+	case R_BUTTON_UP:
+		swprintf_s(buf, TEXT("右键弹起：%d,%d\n"), x, y);
+		break;
+	default:
+		break;
+	}
+	OutputDebugString(buf);
+	return false;
+}
+
+bool Game::KeyBoard(char key, BUTTON_KEY bk)
+{
+	wchar_t buf[50] = { 0 };
+	switch (bk)
+	{
+	case KB_DOWN:
+		swprintf_s(buf, TEXT("按下：%c\n"), key);
+		break;
+	case KB_UP:
+		swprintf_s(buf, TEXT("弹起：%c\n"), key);
+		break;
+	default:
+		break;
+	}
 	OutputDebugString(buf);
 	return false;
 }

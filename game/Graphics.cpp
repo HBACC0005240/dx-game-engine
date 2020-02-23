@@ -5,6 +5,7 @@ bool keyW = false, keyA = false,keyS = false, keyD = false, keyQ = false, keyR =
 //是否可以一直移动
 bool IS_KEY_DOWN = false;
 Graphics::Graphics(GameWind& wnd):wnd(wnd){
+
 	OutputDebugString(L"Graphics()构造\n");
 	InitD3D();
 
@@ -37,6 +38,10 @@ Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	//创建地图
 	char map[] = "0";
 	g_map = new GMap(map, m_d3dDevice);
+
+	//指定通知函数
+	wnd.KeyBoard = GMap::KeyBoard;
+	wnd.keyMouse = GMap::keyMouse;
 
 	//创建动画
 	//char wzlfile[] = ".\\Data\\Objects";

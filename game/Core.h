@@ -14,3 +14,14 @@
 
 
 #define CALL  __stdcall
+
+enum BUTTON_KEY
+{
+    L_BUTTON_DOWN = 0,
+    L_BUTTON_UP = 1,
+    R_BUTTON_DOWN = 2,
+    R_BUTTON_UP = 3,
+
+    KB_DOWN = 4,
+    KB_UP = 5,
+};

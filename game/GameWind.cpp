@@ -154,13 +154,50 @@ LRESULT CALLBACK GameWind::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 	{
 		pt.x = LOWORD(lParam);
 		pt.y = HIWORD(lParam);
+		//wsprintf(buf, L"左键按下:%d,%d\n", pt.x, pt.y);
+		//OutputDebugString(buf);
+		gWnd->keyMouse(pt.x,pt.y,L_BUTTON_DOWN);
+		break;
+	}
+	case WM_LBUTTONUP:                      //鼠标左键弹起消息
+	{
+		pt.x = LOWORD(lParam);
+		pt.y = HIWORD(lParam);
+		//wsprintf(buf, L"左键弹起:%d,%d\n", pt.x, pt.y);
+		//OutputDebugString(buf);
+		gWnd->keyMouse(pt.x, pt.y, L_BUTTON_UP);
+		break;
+	}
+	case WM_RBUTTONDOWN:                      //鼠标右键按下消息
+	{
+		pt.x = LOWORD(lParam);
+		pt.y = HIWORD(lParam);
+		//wsprintf(buf, L"右键按下:%d,%d\n", pt.x, pt.y);
+		//OutputDebugString(buf);
+		gWnd->keyMouse(pt.x, pt.y, R_BUTTON_DOWN);
+		break;
+	}
+	case WM_RBUTTONUP:                      //鼠标右键弹起消息
+	{
+		pt.x = LOWORD(lParam);
+		pt.y = HIWORD(lParam);
+		//wsprintf(buf, L"右键弹起:%d,%d\n", pt.x, pt.y);
+		//OutputDebugString(buf);
+		gWnd->keyMouse(pt.x, pt.y, R_BUTTON_UP);
 		break;
 	}
 	case WM_KEYDOWN:       //键盘消息
 	{
 		//wsprintf(buf, L"键盘按下:%c\n", wParam);
 		//OutputDebugString(buf);
-		//gWnd->KeyDown((int)wParam);
+		gWnd->KeyBoard(wParam,KB_DOWN);
+		break;
+	}
+	case WM_KEYUP:       //键盘消息
+	{
+		//wsprintf(buf, L"键盘按下:%c\n", wParam);
+		//OutputDebugString(buf);
+		gWnd->KeyBoard(wParam, KB_UP);
 		break;
 	}
 	case WM_MOUSEMOVE:

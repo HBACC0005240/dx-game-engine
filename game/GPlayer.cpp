@@ -18,6 +18,13 @@ GPlayer::~GPlayer()
 
 void GPlayer::Load(HUM_STATE state,DIRECTION dir)
 {
+	if (mState == state && mDir == dir){
+		//状态与方向没有改变
+		return;
+	}
+	//清空容器
+	m_DrawMap.clear();
+
 	mState = state;
 	mDir = dir;
 
@@ -29,9 +36,9 @@ void GPlayer::Load(HUM_STATE state,DIRECTION dir)
 	//加载当前显示图片
 	for (int i = 0; i < totalFarme; i++)
 	{
-		GDrawMap::iterator it = m_DrawMap.find(i);
-		if (it == m_DrawMap.end())
-		{
+		//GDrawMap::iterator it = m_DrawMap.find(i);
+		//if (it == m_DrawMap.end())
+		//{
 			GWzlDraw* mDraw = new GWzlDraw(p_d3dDevice);
 			m_DrawMap.insert(GDrwa(i, mDraw));
 	
@@ -41,7 +48,7 @@ void GPlayer::Load(HUM_STATE state,DIRECTION dir)
 				//跳过循环
 				continue;
 			}
-		}
+		//}
 
 		GWzlDraw* tDraw = m_DrawMap.at(i);
 		tDraw->CreateTexture();

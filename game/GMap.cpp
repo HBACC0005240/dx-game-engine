@@ -4,52 +4,33 @@
 #include "GAnimation.h"
 #include "GPlayer.h"
 
+#define WND_WIDTH 800
+#define WND_HEIGHT 600
+
 typedef std::unordered_map<int, GWzlDraw*> GDrawMap;
 typedef std::pair<int, GWzlDraw*> GDrwa;
 
 typedef std::unordered_map<int, GAnimation*> GAniMap;
 typedef std::pair<int, GAnimation*> GAni;
 
-//#include "DrawTriangle.h"
-GWzlData* Objects[6];
-GWzlData* Tiles;
-GWzlData* SmTiles;
+//资源对象池
+GWzlData* Tiles;//大地砖
+GWzlData* SmTiles;//小地砖
+GWzlData* Objects[6];//物件
+GWzlData* pWzlHum;//人物资源
+GPlayer* g_player;//人物
+DrawLine* g_line;//坐标线
 
+//缓存容器
+GDrawMap g_TilesMap;//大地砖
+GDrawMap g_SmTilesMap;//小地砖
+GDrawMap g_Objects[6];//物件
+GDrawMap g_MaskObjects[6];//遮罩物件
+GAniMap g_Animation;//灯泡
 
-
-//大地砖 小地砖 物件
-//大地砖缓存容器
-GDrawMap g_TilesMap;
-//小地砖
-GDrawMap g_SmTilesMap;
-//物件
-GDrawMap g_Objects[6];
-//遮罩物件
-GDrawMap g_MaskObjects[6];
-
-//灯泡
-GAniMap g_Animation;
-
-//人物资源
-GWzlData* pWzlHum;
-//人物
-GPlayer* g_player;
-//GWzlDraw* m_Draw;
-//GWzlDraw* m_Tiles;
-//GWzlDraw* m_SmTiles;
-//DrawTriangle* g_san;
-
-DrawLine* g_line;
-
-//当前屏幕中心点坐标
-//struct POS
-//{
-//	float x;
-//	float y;
-//};
-
-POS pos;
-POS map = { 48.0f,32.0f };
+//坐标信息
+POS pos = { 323 ,283 };//人物坐标
+POS map = { 48.0f,32.0f };//地图小格子信息
 
 bool keyF = false, keyFF = true;
 bool keyG = false, keyGG = true;
@@ -87,11 +68,12 @@ GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice)
 
 GMap::~GMap()
 {
-	delete[] Objects;
 	delete Tiles;
 	delete SmTiles;
+	delete[] Objects;
 	delete pWzlHum;
 	delete g_player;
+	delete g_line;
 	//delete m_Draw;
 	//delete m_Tiles;
 	//delete m_SmTiles;
@@ -99,8 +81,8 @@ GMap::~GMap()
 
 void GMap::Load()
 {
-	//人物初始化
-	g_player->Load(WALK, UP);
+	//人物初始化状态
+	g_player->Load(STAND, DOWN);
 
 	FILE* fp;
 	//读取wzx
@@ -254,8 +236,8 @@ void GMap::Show(int pX, int pY)
 bool GMap::GetLightWorldXY(float X, float Y, float& mX, float& mY)
 {
 	//(0,0)=>(24,16) (1,1)=>(72,48)
-	mX = X * 48.0f + 400.0f - (pos.x * 48.0f) - 24.0f;
-	mY = Y * 32.0f + 300.0f - (pos.y * 32.0f) - 16.0f;
+	mX = X * map.x + 400.0f - (pos.x * map.x) - map.x/2;
+	mY = Y * map.y + 300.0f - (pos.y * map.y) - map.y/2;
 	return true;
 }
 
@@ -620,7 +602,6 @@ void GMap::DrawWorldLine() {
 	}
 }
 
-
 bool GMap::GetWorldXY(float X, float Y, float& mX, float& mY, bool IsCenter)
 {
 	//(0,0)=>(24,16) (1,1)=>(72,48)
@@ -642,4 +623,63 @@ bool GMap::GetMapWorldXY(GWzlDraw* GDraw, float X, float Y, float& mX, float& mY
 	mX = 400.0f + (X * map.x) - (pos.x * map.x) - (map.x / 2) - GDraw->sImage.x;
 	mY = 300.0f + (Y * map.y) - (pos.y * map.y) - (map.y / 2) - GDraw->sImage.y - GDraw->sImage.height;
 	return true;
+}
+
+bool GMap::keyMouse(int x, int y, BUTTON_KEY bk)
+{
+	HUM_STATE state = STAND;
+	DIRECTION dir = DOWN;
+
+	int px = x - WND_WIDTH/2;
+	int py = y - WND_HEIGHT/2;
+
+	wchar_t buf[50] = { 0 };
+	swprintf_s(buf, TEXT("坐标：%d,%d\n"), px, px);
+	OutputDebugString(buf);
+
+	switch (bk)
+	{
+	case L_BUTTON_DOWN:
+		swprintf_s(buf, TEXT("左键按下：%d,%d\n"), x, y);
+		if (x < WND_WIDTH/2 && y < WND_HEIGHT/2)
+		{
+
+		}
+		break;
+	case L_BUTTON_UP:
+		swprintf_s(buf, TEXT("左键弹起：%d,%d\n"), x, y);
+		break;
+	case R_BUTTON_DOWN:
+		swprintf_s(buf, TEXT("右键按下：%d,%d\n"), x, y);
+		break;
+	case R_BUTTON_UP:
+		swprintf_s(buf, TEXT("右键弹起：%d,%d\n"), x, y);
+		break;
+	default:
+		break;
+	}
+	OutputDebugString(buf);
+
+
+	//人物
+	g_player->Load(WALK, DOWN);
+	return false;
+}
+
+bool GMap::KeyBoard(char key, BUTTON_KEY bk)
+{
+	wchar_t buf[50] = { 0 };
+	switch (bk)
+	{
+	case KB_DOWN:
+		swprintf_s(buf, TEXT("按下：%c\n"), key);
+		break;
+	case KB_UP:
+		swprintf_s(buf, TEXT("弹起：%c\n"), key);
+		break;
+	default:
+		break;
+	}
+	OutputDebugString(buf);
+	return false;
 }

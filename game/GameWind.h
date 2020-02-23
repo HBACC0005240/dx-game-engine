@@ -6,14 +6,18 @@
  *+-------------------------------------------------
  */
 
-
 class GameWind{
 public:
     HWND mHwnd;
     RECT wcRect;
     RECT clientRect;//客户去矩形
     static POINT pt;
-    bool (*KeyDown)(int);
+
+    //按键函数指针
+    bool (*KeyBoard)(char key, BUTTON_KEY bk);
+    //鼠标按键函数指针
+    bool (*keyMouse)(int x, int y, BUTTON_KEY bk);
+
     float mWidth;
     float mHeight;
 private:
