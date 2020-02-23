@@ -577,7 +577,7 @@ public:
 	HRESULT CreateVectexRHW2(int x, int y);
 	void Draw(int x, int y, WZL_ALPHA mode = COLOR_NONE);
 	void DrawTexture(LPDIRECT3DDEVICE9 d3dDevice);
-	void CreateTexture();
+	void CreateTexture(byte alpha = 0xff);
 	static void OpenSaveBmp();
 	void SaveBmp(char file[], int biWidth, int biHeight, int bmpDataSize, BYTE* bmpData);
 	void OpenRGB();

@@ -24,6 +24,8 @@ GDrawMap g_TilesMap;
 GDrawMap g_SmTilesMap;
 //物件
 GDrawMap g_Objects[6];
+//遮罩物件
+GDrawMap g_MaskObjects[6];
 
 //灯泡
 GAniMap g_Animation;
@@ -160,13 +162,17 @@ void GMap::Show(int pX, int pY)
 		DrawSmTiles();
 	}
 
-	//g_player->Show();
+	g_player->Show();
 
 	//Objects
 	if (keyHH)
 	{
 		DrawObjects();
 	}
+
+	//player
+	DrawPlayer();
+
 	//light
 	if (keyJJ)
 	{
@@ -382,10 +388,14 @@ void GMap::DrawObjects()
 	int map_sort = 0;
 	int object_sort = 0;
 	int file_area = 0;
-	int light = 0;
+	
 
 	for (int x = rect.left; x < rect.right; x++)
 	{
+		if (x == pos.x)
+		{
+			g_player->Show();
+		}
 		for (int y = rect.top; y < rect.bottom; y++)
 		{
 			map_sort = x * m_MapHeader.height + y;
@@ -404,8 +414,8 @@ void GMap::DrawObjects()
 			//object
 			object_sort = (ms_MapInfo[map_sort].wFrImg & 0b0111111111111111) - 1;
 
-			//light
-			light = (ms_MapInfo[map_sort].btAniFrame);
+			//light [移除原地图上那个破旧的灯]
+			int light = (ms_MapInfo[map_sort].btAniFrame);
 
 			//文件号 +1
 			file_area = ms_MapInfo[map_sort].btArea;
@@ -440,34 +450,87 @@ void GMap::DrawObjects()
 					//char file[100] = ".\\Bmp\\0.bmp";
 					//sprintf_s(file, ".\\Bmp\\%d.bmp", object_sort);
 					//tTiles->SaveBmp(file, tTiles->sImage.width, tTiles->sImage.height, tTiles->sImage.width * tTiles->sImage.height, tTiles->data);
-
-
 					tTiles->CreateTexture();
 					g_Objects[file_area].insert(GDrwa(object_sort, tTiles));
 				}
 				GWzlDraw* tObject = g_Objects[file_area].at(object_sort);
 				GetMapWorldXY(tObject, x, y + 1, offsetX, offsetY);
-				if (light){
-					tObject->Draw(offsetX, offsetY);
-				}else {
-					
-					if (pos.x == x && y > pos.y)
-					{
-						//g_player->Show();
-						tObject->Draw(offsetX, offsetY,COLOR_ARGB);
-					}
-					else {
-						tObject->Draw(offsetX, offsetY, COLOR_ARGB);
-					}
-				}
+				
+				tObject->Draw(offsetX, offsetY, COLOR_ARGB);
+				
 				//p_d3dDevice->EndScene();
 				//p_d3dDevice->Present(NULL, NULL, NULL, NULL);
 				//int i = 0;
 			}
-
-			light = 0;
 		}
+	}
+}
 
+void GMap::DrawPlayer()
+{
+	//Objects
+	float offsetX = 0, offsetY = 0;
+	int map_sort = 0;
+	int object_sort = 0;
+	int file_area = 0;
+
+
+	g_player->Show();
+	for (int x = pos.x; x < pos.x + 2; x++)
+	{
+		for (int y = pos.y + 1; y < rect.bottom; y++)
+		{
+			map_sort = x * m_MapHeader.height + y;
+
+			//object
+			object_sort = (ms_MapInfo[map_sort].wFrImg & 0b0111111111111111) - 1;
+
+			//light [移除原地图上那个破旧的灯]
+			int light = (ms_MapInfo[map_sort].btAniFrame);
+
+			//文件号 +1
+			file_area = ms_MapInfo[map_sort].btArea;
+
+			if (object_sort > 0) {
+
+				//获取object的图片对象
+				GDrawMap::const_iterator objit = g_Objects[file_area].find(object_sort);
+				if (objit == g_Objects[file_area].end()) {
+					//没找到该对象
+					continue;
+				}
+
+				//获取当前图片
+				GWzlDraw* tObject = g_Objects[file_area].at(object_sort);
+
+				//计算当前与人物Y距离
+				int PosHeight = (y - pos.y) * map.y;
+				if (tObject->sImage.height > PosHeight) {
+
+					//初始化一个
+					GDrawMap::const_iterator objit = g_MaskObjects[file_area].find(object_sort);
+					if (objit == g_MaskObjects[file_area].end())
+					{
+						GWzlDraw* tTiles = new GWzlDraw(p_d3dDevice);
+						Objects[file_area]->LoadWzl(object_sort, tTiles);
+						if (tTiles->data == nullptr)
+						{
+							//跳过本次循环
+							delete tTiles;
+							continue;
+						}
+						tTiles->CreateTexture(0x99);
+						g_MaskObjects[file_area].insert(GDrwa(object_sort, tTiles));
+					}
+					GWzlDraw* tObject = g_MaskObjects[file_area].at(object_sort);
+					GetMapWorldXY(tObject, x, y + 1, offsetX, offsetY);
+					tObject->Draw(offsetX, offsetY, COLOR_ARGB);
+					//p_d3dDevice->EndScene();
+					//p_d3dDevice->Present(NULL, NULL, NULL, NULL);
+					//int i = 0;
+				}
+			}
+		}
 	}
 }
 

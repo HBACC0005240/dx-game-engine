@@ -331,7 +331,7 @@ void GWzlDraw::DrawTexture(LPDIRECT3DDEVICE9 d3dDevice)
 }
 
 
-void GWzlDraw::CreateTexture()
+void GWzlDraw::CreateTexture(byte alpha)
 {
 
 	if (data == nullptr)
@@ -395,7 +395,7 @@ void GWzlDraw::CreateTexture()
 				UINT index = (height - 1 - h) * lockRect.Pitch / 4 + w;
 				if (color != 0xff000000)
 				{
-					imageData3[index] = D3DCOLOR_ARGB(0xff,r, g, b);
+					imageData3[index] = D3DCOLOR_ARGB(alpha,r, g, b);
 				}
 				else {
 					imageData3[index] = D3DCOLOR_ARGB(0,0, 0, 0);
@@ -456,6 +456,9 @@ void GWzlDraw::CreateTexture()
 				if (imageData33[index] == 0xff000000)
 				{
 					imageData33[index] = D3DCOLOR_ARGB(0, 0, 0, 0);
+				}
+				else {
+					//imageData33[index] = D3DCOLOR_ARGB(0, 0, 0, 0);
 				}
 			}
 		}

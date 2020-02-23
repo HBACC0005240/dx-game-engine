@@ -45,6 +45,7 @@ public:
 	void DrawTiles();
 	void DrawSmTiles();
 	void DrawObjects();
+	void DrawPlayer();
 	void DrawAnimation();
 	void DrawWorldLine();
 };

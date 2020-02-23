@@ -1,6 +1,6 @@
 #include "Graphics.h"
 //初始化
-int pX = 334, pY = 263;
+int pX = 323, pY = 283;
 bool keyW = false, keyA = false,keyS = false, keyD = false, keyQ = false, keyR = false;
 //是否可以一直移动
 bool IS_KEY_DOWN = false;
@@ -162,7 +162,7 @@ void Graphics::Render()
 	g_line->Draw(350.0f, 300.0f, 450.0f, 300.0f, 0xffffffff);
 
 	//绘制人物
-	g_player->Show();
+	//g_player->Show();
 
 	//绘制动画
 	//g_Ani->Show(100,100);
