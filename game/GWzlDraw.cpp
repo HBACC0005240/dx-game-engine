@@ -141,9 +141,9 @@ HRESULT GWzlDraw::CreateVectexRHW2(int x, int y)
 
 	GTextureVertexRHW2 Vertices[] = {
 		{  wof2 ,   tHeight, 0.0f, 1.0f, 0xffffffff, 0.0f, 1.0f},
-		{  wof2,    hof2,	 0.0f, 1.0f, 0xffffffff, 0.0f, 0.0f},
+		{  wof2,    hof2,	 0.0f, 1.0f, D3DCOLOR_ARGB(0x0,0xff,0xff,0xff), 0.0f, 0.0f},
 		{  tWidth,  tHeight, 0.0f, 1.0f, 0xffffffff, 1.0f, 1.0f},
-		{  tWidth,  hof2,	 0.0f, 1.0f, 0xffffffff, 1.0f, 0.0f},
+		{  tWidth,  hof2,	 0.0f, 1.0f, D3DCOLOR_ARGB(0x0,0xff,0xff,0xff), 1.0f, 0.0f},
 	};
 
 	//创建顶点缓存
@@ -447,6 +447,9 @@ void GWzlDraw::CreateTexture(byte alpha)
 		m_dstD3dSurface->LockRect(&lockr, 0, 0);
 		DWORD* imageData33 = (DWORD*)lockr.pBits;
 
+		//创建
+		//data16 = new BYTE[height * width];
+
 		DWORD color = 0;
 		for (UINT i = 0; i < d3ddesc.Height; i++)
 		{
@@ -455,11 +458,18 @@ void GWzlDraw::CreateTexture(byte alpha)
 				UINT index = i * lockr.Pitch / 4 + j;
 				if (imageData33[index] == 0xff000000)
 				{
-					imageData33[index] = D3DCOLOR_ARGB(0, 0, 0, 0);
+					imageData33[index] = D3DCOLOR_ARGB(1, 2, 3, 4);
+
 				}
 				else {
+					
 					//imageData33[index] = D3DCOLOR_ARGB(0, 0, 0, 0);
 				}
+
+				//int sort = i * d3ddesc.Width + j;
+				//ColorARGB* tColor = (ColorARGB*)&imageData33[index];
+				//PALETTEENTRY cl = { tColor->R,tColor->G,tColor->B};
+				//data16[sort] = FindColor(cl);
 			}
 		}
 
@@ -484,6 +494,22 @@ void GWzlDraw::OpenRGB() {
 	fclose(fp);
 }
 
+//寻找调色板对应的序号
+int GWzlDraw::FindColor(PALETTEENTRY sColor)
+{
+	for (int i = 0; i < 256; i++)
+	{
+		if (p_color[i].peRed == sColor.peRed 
+			&& p_color[i].peGreen == sColor.peGreen
+			&& p_color[i].peBlue == sColor.peBlue
+			){
+			return i;
+		}
+	}
+
+	return 0;
+}
+
 struct 	BitMapLine
 {
 	BYTE colorIndex;
@@ -493,7 +519,7 @@ void GWzlDraw::OpenSaveBmp()
 {
 	FILE *fp;
 
-	fopen_s(&fp, "1.bmp", "r+b");
+	fopen_s(&fp, "0.bmp", "r+b");
 
 	BITMAPFILEHEADER head;
 	BITMAPINFOHEADER info;
@@ -524,7 +550,8 @@ void GWzlDraw::OpenSaveBmp()
 
 	//写出文件
 
-	fopen_s(&fp, "RGBQUAD.dat", "wb");
+	//fopen_s(&fp, "RGBQUAD.dat", "wb");
+	fopen_s(&fp, "test02.bmp", "wb");
 
 	//BITMAPFILEHEADER bitHeader = { 0x4d42,54 + sizeof(RGBQUAD) * 256,0,0,1078 };
 	//BITMAPINFOHEADER bitInfo = { 40,info.biWidth,info.biHeight,1,8,0,info.biSizeImage,0,0,256,0 };
@@ -549,16 +576,26 @@ void GWzlDraw::OpenSaveBmp()
 	tinfo.biClrUsed = 256;
 	tinfo.biClrImportant = 0;
 
-	//fwrite(&header, sizeof(BITMAPFILEHEADER), 1, fp);
-	//fwrite(&tinfo, sizeof(BITMAPINFOHEADER), 1, fp);
+	fwrite(&header, sizeof(BITMAPFILEHEADER), 1, fp);
+	fwrite(&tinfo, sizeof(BITMAPINFOHEADER), 1, fp);
 	fwrite(&aColors, sizeof(aColors), 1, fp); 
-	//fwrite(lines, info.biSizeImage, 1, fp);
+	fwrite(lines, info.biSizeImage, 1, fp);
 	
 	fclose(fp);
 }
 
-void GWzlDraw::SaveBmp(char file[],int biWidth,int biHeight, int bmpDataSize, BYTE *bmpData)
+void GWzlDraw::SaveBmp(char file[])
 {
+	int biWidth = sImage.width;
+	int biHeight = sImage.height;
+	BYTE* bmpData = data;
+	int bmpDataSize = sImage.width * sImage.height;
+	if (sImage.pixelFormat == 5)
+	{
+		bmpDataSize += (sImage.height * 2);
+		//bmpData = data16;
+	}
+
 	FILE* fp;
 	RGBQUAD tColors[256] = { 0 };
 

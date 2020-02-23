@@ -77,7 +77,7 @@ GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice)
 	SmTiles = nullptr;
 
 	//加载人物图片
-	char humfile[] = ".\\Data\\hum";
+	char humfile[] = ".\\Data\\hum2";
 	//char file[] = ".\\Data\\hum2";
 	//char file[] = ".\\Data\\hum3";
 	//char file[] = ".\\Data\\items";
@@ -100,7 +100,7 @@ GMap::~GMap()
 void GMap::Load()
 {
 	//人物初始化
-	g_player->Load(STAND, DOWN);
+	g_player->Load(WALK, UP);
 
 	FILE* fp;
 	//读取wzx
@@ -162,7 +162,7 @@ void GMap::Show(int pX, int pY)
 		DrawSmTiles();
 	}
 
-	g_player->Show();
+
 
 	//Objects
 	if (keyHH)
@@ -170,9 +170,17 @@ void GMap::Show(int pX, int pY)
 		DrawObjects();
 	}
 
-	//player
-	DrawPlayer();
+	g_line->Draw(400.0f, 284.0f, 400.0f, 316.0f, 0xffffffff);
+	g_line->Draw(376.0f, 300.0f, 424.0f, 300.0f, 0xffffffff);
 
+	//玩家绘制
+	g_player->Show();
+
+	if (keyHH)
+	{
+		//player-mask
+		DrawPlayer();
+	}
 	//light
 	if (keyJJ)
 	{
@@ -308,9 +316,8 @@ void GMap::DrawTiles()
 					g_TilesMap.insert(GDrwa(tiles_sort, tTiles));
 				}
 				GWzlDraw* tObject = g_TilesMap.at(tiles_sort);
-	
 				GetMapWorldXY(tObject, x, y + 2, offsetX, offsetY);
-				tObject->Draw(offsetX, offsetY);
+				tObject->Draw(offsetX, offsetY,COLOR_ARGB);
 			}
 		}
 
@@ -371,7 +378,7 @@ void GMap::DrawSmTiles()
 				GWzlDraw* tObject = g_SmTilesMap.at(sm_tiles_sort);
 
 				GetMapWorldXY(tObject, x, y, offsetX, offsetY);
-				tObject->Draw(offsetX, offsetY);
+				tObject->Draw(offsetX, offsetY,COLOR_ARGB);
 				//p_d3dDevice->EndScene();
 				//p_d3dDevice->Present(NULL, NULL, NULL, NULL);
 				//int i = 0;
@@ -392,10 +399,6 @@ void GMap::DrawObjects()
 
 	for (int x = rect.left; x < rect.right; x++)
 	{
-		if (x == pos.x)
-		{
-			g_player->Show();
-		}
 		for (int y = rect.top; y < rect.bottom; y++)
 		{
 			map_sort = x * m_MapHeader.height + y;
@@ -474,8 +477,6 @@ void GMap::DrawPlayer()
 	int object_sort = 0;
 	int file_area = 0;
 
-
-	g_player->Show();
 	for (int x = pos.x; x < pos.x + 2; x++)
 	{
 		for (int y = pos.y + 1; y < rect.bottom; y++)

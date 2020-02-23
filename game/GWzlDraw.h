@@ -10,6 +10,14 @@ enum WZL_ALPHA
 	COLOR_LIGHT = 2,
 };
 
+struct ColorARGB
+{
+	BYTE B;
+	BYTE G;
+	BYTE R;
+	BYTE A;
+};
+
 struct GTextureVertex
 {
 	float x, y, z;
@@ -38,6 +46,7 @@ class GWzlDraw {
 public:
 	WzlImage sImage;
 	BYTE* data;
+	BYTE* data16;
 	HUM_STATE mState; //当前动画状态
 	DIRECTION mDir;//当前帧方向
 	int frame;//当前帧数
@@ -579,6 +588,7 @@ public:
 	void DrawTexture(LPDIRECT3DDEVICE9 d3dDevice);
 	void CreateTexture(byte alpha = 0xff);
 	static void OpenSaveBmp();
-	void SaveBmp(char file[], int biWidth, int biHeight, int bmpDataSize, BYTE* bmpData);
+	void SaveBmp(char file[]);
 	void OpenRGB();
+	int FindColor(PALETTEENTRY sColor);
 };

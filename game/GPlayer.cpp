@@ -18,8 +18,11 @@ GPlayer::~GPlayer()
 
 void GPlayer::Load(HUM_STATE state,DIRECTION dir)
 {
+	mState = state;
+	mDir = dir;
+
 	int totalFarme = TOTAL_FRAME;
-	if (state == BATTLE_POS)
+	if (state == ATTACK_POS)
 	{
 		totalFarme = 1;
 	}
@@ -31,20 +34,33 @@ void GPlayer::Load(HUM_STATE state,DIRECTION dir)
 		{
 			GWzlDraw* mDraw = new GWzlDraw(p_d3dDevice);
 			m_DrawMap.insert(GDrwa(i, mDraw));
+	
+			mpWzl->Load(state, dir, i, m_DrawMap.at(i), totalFarme);
+			if (m_DrawMap.at(i)->data == nullptr)
+			{
+				//跳过循环
+				continue;
+			}
 		}
-		mpWzl->Load(state, dir, i, m_DrawMap.at(i), totalFarme);
-		m_DrawMap.at(i)->CreateTexture();
+
+		GWzlDraw* tDraw = m_DrawMap.at(i);
+		tDraw->CreateTexture();
+
+		//char file[100];
+		//sprintf_s(file, ".\\bmp\\%d.bmp", i);
+		//tDraw->SaveBmp(file);
 	}
 }
 
 void GPlayer::Show()
 {
 	//加载当前显示图片
+
 	if (m_DrawMap.at(mFrame)->data == nullptr){
 		mFrame = 0;
 	}
 
-	m_DrawMap.at(mFrame)->Draw(375, 273, COLOR_ARGB);
+	m_DrawMap.at(mFrame)->Draw(375, 282, COLOR_ARGB);
 	//m_DrawMap.at(mFrame)->Draw(100, 273);
 	//m_DrawMap.at(mFrame)->Draw(150, 273);
 	//m_DrawMap.at(mFrame)->Draw(200, 273);
@@ -56,6 +72,10 @@ void GPlayer::Show()
 	//m_DrawMap.at(mFrame)->Draw(500, 273);
 	if (time.CountDown(150))
 	{
+		if (mState == ATTACK_POS){
+			//攻击状态就不增加帧数
+			return;
+		}
 		mFrame++;
 		if (mFrame >= TOTAL_FRAME){
 			mFrame = 0;

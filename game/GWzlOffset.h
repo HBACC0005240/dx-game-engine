@@ -8,8 +8,8 @@ enum HUM_STATE
 	STAND = 0,//4ึก ฟี4ึก
 	WALK = STAND + 64,//6ึก ฟี2ึก
 	RUN = STAND + 128,//6ึก ฟี2ึก
-	BATTLE_POS = STAND + 192,//8ึก ฟี0ึก
-	ATTACK = BATTLE_POS + 8,//6ึก ฟี2ึก
+	ATTACK_POS = STAND + 192,//8ึก ฟี0ึก
+	ATTACK = ATTACK_POS + 8,//6ึก ฟี2ึก
 };
 
 //ศหฮ๏ทฝฯ๒รถพู 0~7

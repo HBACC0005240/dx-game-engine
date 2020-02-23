@@ -27,6 +27,9 @@
     <ClCompile Include="调试unordered_map.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="左移操作符.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="类依赖构造.h">

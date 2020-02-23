@@ -50,7 +50,7 @@ void show(Animal* animal) {
 }
 
 
-int _main() {
+int _2main() {
 	//Animal* anm = new Animal("¶¯Îï");
 	//show(anm);
 

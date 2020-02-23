@@ -27,12 +27,12 @@ Graphics::Graphics(GameWind& wnd):wnd(wnd){
 	g_3dtriangle = new DrawTriangle(m_d3dDevice);
 
 	//加载人物图片
-	char file[] = ".\\Data\\hum";
+	//char file[] = ".\\Data\\hum";
 	//char file[] = ".\\Data\\hum2";
 	//char file[] = ".\\Data\\hum3";
 	//char file[] = ".\\Data\\items";
-	pWzlHum = new GWzlData(file);
-	g_player = new GPlayer(pWzlHum, 0, 0, m_d3dDevice);
+	//pWzlHum = new GWzlData(file);
+	//g_player = new GPlayer(pWzlHum, 0, 0, m_d3dDevice);
 
 	//创建地图
 	char map[] = "0";
@@ -67,7 +67,7 @@ Graphics::~Graphics()
 	delete g_3dtriangle;
 
 	delete pWzlHum;
-	delete g_player;
+	//delete g_player;
 	OutputDebugString(L"~Graphics()析构\n");
 }
 
@@ -135,7 +135,7 @@ HRESULT Graphics::InitVertex()
 	//g_3dtriangle->setIndices();
 
 	//加载图片
-	g_player->Load(STAND,DOWN);
+	//g_player->Load(STAND,DOWN);
 
 	//加载地图
 	g_map->Load();
@@ -158,8 +158,8 @@ void Graphics::Render()
 	g_map->Show(pX, pY);
 
 	//画线列表
-	g_line->Draw(400.0f, 250.0f, 400.0f, 350.0f, 0xffffffff);
-	g_line->Draw(350.0f, 300.0f, 450.0f, 300.0f, 0xffffffff);
+	//g_line->Draw(400.0f, 250.0f, 400.0f, 350.0f, 0xffffffff);
+	//g_line->Draw(350.0f, 300.0f, 450.0f, 300.0f, 0xffffffff);
 
 	//绘制人物
 	//g_player->Show();
@@ -190,11 +190,11 @@ void Graphics::Render()
 
 	//KeyDown();
 	//--------------------------------------------------------------
-	wchar_t pos[50] = { 0 };
 	//绘制时间
-	wsprintf(pos, L"人物状态：s:%d,f:%d", g_player->mState, g_player->mFrame);
-	g_text->Draw(pos, 0, 60, 800, 600, 0xffffffff);
+	//wsprintf(pos, L"人物状态：s:%d,f:%d", g_player->mState, g_player->mFrame);
+	//g_text->Draw(pos, 0, 60, 800, 600, 0xffffffff);
 
+	wchar_t pos[50] = { 0 };
 	
 
 	//人物坐标
