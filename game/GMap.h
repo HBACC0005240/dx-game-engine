@@ -24,17 +24,21 @@ struct MapInfo {
 	byte btLight;
 };
 
-class GMap {
+const double PI = 3.1415927;
 
+class GMap {
+	
 public:
 	LPDIRECT3DDEVICE9 p_d3dDevice;
+	LPD3DXFONT p_d3dFont = nullptr;//文字对象
 	char m_MapFile[100];	//文件名字
 	MapHeader m_MapHeader;
 	MapInfo* ms_MapInfo;
 	std::vector<GWzlDraw*> g_Draw;
 	RECT rect;
+	GTime time;
 public:
-	GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice);
+	GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice, LPD3DXFONT d3dFont);
 	~GMap();
 	void Load();
 	void Show(int x,int y);
@@ -51,4 +55,6 @@ public:
 
 	static bool KeyBoard(char key, BUTTON_KEY bk);
 	static bool keyMouse(int x, int y, BUTTON_KEY bk);
+	static DIRECTION HasDir(int angle);
+	void GoXY();
 };

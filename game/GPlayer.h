@@ -5,7 +5,7 @@
 
 struct POS
 {
-	int x, y;
+	float x, y;
 };
 
 typedef std::unordered_map<int, GWzlDraw*> GDrawMap;

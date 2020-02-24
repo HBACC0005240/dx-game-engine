@@ -3,6 +3,7 @@
 #include "DrawLine.h"
 #include "GAnimation.h"
 #include "GPlayer.h"
+#include "DrawGText.h"
 
 #define WND_WIDTH 800
 #define WND_HEIGHT 600
@@ -20,6 +21,7 @@ GWzlData* Objects[6];//物件
 GWzlData* pWzlHum;//人物资源
 GPlayer* g_player;//人物
 DrawLine* g_line;//坐标线
+DrawGText* g_text;//文字对象
 
 //缓存容器
 GDrawMap g_TilesMap;//大地砖
@@ -31,6 +33,10 @@ GAniMap g_Animation;//灯泡
 //坐标信息
 POS pos = { 323 ,283 };//人物坐标
 POS map = { 48.0f,32.0f };//地图小格子信息
+//记步
+static float bu = pos.x;
+HUM_STATE state = STAND;
+DIRECTION dir = DOWN;
 
 bool keyF = false, keyFF = true;
 bool keyG = false, keyGG = true;
@@ -38,11 +44,11 @@ bool keyH = false, keyHH = true;
 bool keyJ = false, keyJJ = true;
 bool keyK = false, keyKK = true;
 
-GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice)
+GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice, LPD3DXFONT d3dFont)
 {
 	OutputDebugString(L"GMap()构造\n");
 	p_d3dDevice = d3dDevice;
-
+	p_d3dFont = d3dFont;
 	//索引对象
 	//pWzx = new GWzxData(file);
 	for (int i = 0; i < 5; i++)
@@ -53,6 +59,8 @@ GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice)
 
 	//线
 	g_line = new DrawLine(p_d3dDevice);
+	//初始化字体类
+	g_text = new DrawGText(p_d3dFont);
 
 	Tiles = nullptr;
 	SmTiles = nullptr;
@@ -113,8 +121,11 @@ void GMap::Load()
 void GMap::Show(int pX, int pY)
 {
 	//p_d3dDevice->BeginScene();
-	pos.x = pX;
-	pos.y = pY;
+	//pos.x = pX;
+	//pos.y = pY;
+
+	pX = static_cast<int>(pos.x);
+	pY = static_cast<int>(pos.y);
 
 	//按索引绘制地图
 	int width = m_MapHeader.width;
@@ -156,7 +167,14 @@ void GMap::Show(int pX, int pY)
 	g_line->Draw(376.0f, 300.0f, 424.0f, 300.0f, 0xffffffff);
 
 	//玩家绘制
+	GMap::GoXY();
+
 	g_player->Show();
+
+	//人物坐标
+	wchar_t buf[50] = { 0 };
+	wsprintf(buf, L"xy：[%d,%d]", static_cast<int>(pos.x), static_cast<int>(pos.y));
+	g_text->Draw(buf, 380, 300, 800, 600, 0xffffffff);
 
 	if (keyHH)
 	{
@@ -627,43 +645,111 @@ bool GMap::GetMapWorldXY(GWzlDraw* GDraw, float X, float Y, float& mX, float& mY
 
 bool GMap::keyMouse(int x, int y, BUTTON_KEY bk)
 {
-	HUM_STATE state = STAND;
-	DIRECTION dir = DOWN;
-
 	int px = x - WND_WIDTH/2;
 	int py = y - WND_HEIGHT/2;
 
+	//反正切(已知y/x求角度) 正切(已知角度求y/x)
+	double rad = std::atan2(py, px);
+	int angle = 180 * rad / PI;//弧度制转角度
+	
 	wchar_t buf[50] = { 0 };
-	swprintf_s(buf, TEXT("坐标：%d,%d\n"), px, px);
-	OutputDebugString(buf);
+	//swprintf_s(buf, TEXT("坐标：%d,%d;[%d]\n"), px, px, angle);
+	//OutputDebugString(buf);
 
 	switch (bk)
 	{
 	case L_BUTTON_DOWN:
-		swprintf_s(buf, TEXT("左键按下：%d,%d\n"), x, y);
-		if (x < WND_WIDTH/2 && y < WND_HEIGHT/2)
-		{
-
-		}
+		dir = HasDir(angle);
+		g_player->Load(WALK, dir);
+		swprintf_s(buf, TEXT("左键按下：%d,%d;\t角度:%d°;方向:\t%d\n"), x, y, angle, dir);
 		break;
 	case L_BUTTON_UP:
-		swprintf_s(buf, TEXT("左键弹起：%d,%d\n"), x, y);
+		//swprintf_s(buf, TEXT("左键弹起：%d,%d\n"), x, y);
 		break;
 	case R_BUTTON_DOWN:
-		swprintf_s(buf, TEXT("右键按下：%d,%d\n"), x, y);
+		//swprintf_s(buf, TEXT("右键按下：%d,%d\n"), x, y);
 		break;
 	case R_BUTTON_UP:
-		swprintf_s(buf, TEXT("右键弹起：%d,%d\n"), x, y);
+		//swprintf_s(buf, TEXT("右键弹起：%d,%d\n"), x, y);
 		break;
 	default:
 		break;
 	}
+
 	OutputDebugString(buf);
-
-
-	//人物
-	g_player->Load(WALK, DOWN);
 	return false;
+}
+
+DIRECTION GMap::HasDir(int angle)
+{
+	state = WALK;
+
+	if (angle >= -112.5 && angle < -67.5){
+		return UP;
+	}
+	else if (angle >= -67.5 && angle < -22.5){
+		return RIGHT_UP;
+	}
+	else if (angle >= -22.5 && angle < 22.5){
+		return RIGHT;
+	}
+	else if (angle >= 22.5 && angle < 67.5){
+		return RIGHT_DOWN;
+	}
+	else if (angle >= 67.5 && angle < 112.5){
+		return DOWN;
+	}
+	else if (angle >= 112.5 && angle < 157.5){
+		return LEFT_DOWN;
+	}
+	else if ((angle >= 157.5 && angle <= 179) || (angle >= -179 && angle < -157.5)){
+		return LEFT;
+	}else if (angle >= -157.5 && angle <= -112.5) {
+		return LEFT_UP;
+	}
+	return DOWN;
+}
+
+void GMap::GoXY()
+{
+	if ( ! time.CountDown(50)) {
+		return;
+	}
+
+	switch (state)
+	{
+	case STAND:
+		break;
+	case WALK:
+		pos.x += 0.07f;
+		if (abs(pos.x - bu) >= 1) {
+			bu = pos.x;
+			state = STAND;
+			g_player->Load(state, dir);
+		}
+
+		break;
+	case RUN:
+		break;
+	case ATTACK_POS:
+		break;
+	case ATTACK:
+		break;
+	case ATTACK2:
+		break;
+	case ATTACK3:
+		break;
+	case SPELLS:
+		break;
+	case DIG_MEAT:
+		break;
+	case INJURED:
+		break;
+	case DEATH:
+		break;
+	default:
+		break;
+	}
 }
 
 bool GMap::KeyBoard(char key, BUTTON_KEY bk)

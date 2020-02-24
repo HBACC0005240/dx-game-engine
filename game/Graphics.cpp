@@ -37,7 +37,7 @@ Graphics::Graphics(GameWind& wnd):wnd(wnd){
 
 	//创建地图
 	char map[] = "0";
-	g_map = new GMap(map, m_d3dDevice);
+	g_map = new GMap(map, m_d3dDevice,m_d3dFont);
 
 	//指定通知函数
 	wnd.KeyBoard = GMap::KeyBoard;
@@ -200,11 +200,6 @@ void Graphics::Render()
 	//g_text->Draw(pos, 0, 60, 800, 600, 0xffffffff);
 
 	wchar_t pos[50] = { 0 };
-	
-
-	//人物坐标
-	wsprintf(pos, L"xy：[%d,%d]", pX, pY);
-	g_text->Draw(pos, 380, 300, 800, 600, 0xffffffff);
 
 	//绘制FPS
 	g_text->DrawFps(Getfps(), &wnd.clientRect, 0xffffffff);
