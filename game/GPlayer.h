@@ -16,16 +16,22 @@ class GPlayer {
 
 public:
 	LPDIRECT3DDEVICE9 p_d3dDevice;
-	POS mPos = { 0,0 };
+	POS mPos = { 0,0 }; //人物坐标
+	POS nextPos = { 0,0 };//目标的位置
+	POS mXY = { 0,0 };//人物xy增量
+	POS walk = { 0.05f,0.05f };//xy增量大小
+	bool hasMove = false;
 	GWzlData* mpWzl = nullptr;
 	GDrawMap m_DrawMap;
 	HUM_STATE mState = STAND;
-	DIRECTION mDir = UP;
+	DIRECTION mDir = DOWN;
 	static int mFrame;
 	GTime time;
 public:
-	GPlayer(GWzlData* _wzl, int x, int y, LPDIRECT3DDEVICE9 d3dDevice);
+	GPlayer(GWzlData* _wzl, float x, float y, LPDIRECT3DDEVICE9 d3dDevice);
 	~GPlayer();
-	void Load(HUM_STATE state, DIRECTION dir);
-	void Show();
+	void Load();
+	void SetDir(int angle);
+	void Show(int frameRate = 150);
+	void Move();
 };

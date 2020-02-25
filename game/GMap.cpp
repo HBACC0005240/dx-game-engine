@@ -31,12 +31,9 @@ GDrawMap g_MaskObjects[6];//遮罩物件
 GAniMap g_Animation;//灯泡
 
 //坐标信息
-POS pos = { 323 ,283 };//人物坐标
+//POS pos = { 323 ,283 };//人物坐标
 POS map = { 48.0f,32.0f };//地图小格子信息
-//记步
-static float bu = pos.x;
-HUM_STATE state = STAND;
-DIRECTION dir = DOWN;
+POS center = { 0,0 };//地图中心点，（人物给修改）
 
 bool keyF = false, keyFF = true;
 bool keyG = false, keyGG = true;
@@ -66,12 +63,12 @@ GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice, LPD3DXFONT d3dFont)
 	SmTiles = nullptr;
 
 	//加载人物图片
-	char humfile[] = ".\\Data\\hum2";
+	char humfile[] = ".\\Data\\hum";
 	//char file[] = ".\\Data\\hum2";
 	//char file[] = ".\\Data\\hum3";
 	//char file[] = ".\\Data\\items";
 	pWzlHum = new GWzlData(humfile);
-	g_player = new GPlayer(pWzlHum, 0, 0, p_d3dDevice);
+	g_player = new GPlayer(pWzlHum, 323, 283, p_d3dDevice);
 }
 
 GMap::~GMap()
@@ -90,7 +87,7 @@ GMap::~GMap()
 void GMap::Load()
 {
 	//人物初始化状态
-	g_player->Load(STAND, DOWN);
+	g_player->Load();
 
 	FILE* fp;
 	//读取wzx
@@ -124,17 +121,17 @@ void GMap::Show(int pX, int pY)
 	//pos.x = pX;
 	//pos.y = pY;
 
-	pX = static_cast<int>(pos.x);
-	pY = static_cast<int>(pos.y);
+	center.x = g_player->mPos.x;
+	center.y = g_player->mPos.y;
 
 	//按索引绘制地图
 	int width = m_MapHeader.width;
 	int height = m_MapHeader.height;
 	int VIEW = 20;
-	int left	= pX - VIEW < 0 ? 0 : pX - VIEW;
-	int top		= pY - VIEW < 0 ? 0 : pY - VIEW;
-	int right	= pX + VIEW > width ? width : pX + VIEW;
-	int bottom	= pY + VIEW > height ? height : pY + VIEW + 20;
+	int left	= center.x - VIEW < 0 ? 0 : center.x - VIEW;
+	int top		= center.y - VIEW < 0 ? 0 : center.y - VIEW;
+	int right	= center.x + VIEW > width ? width : center.x + VIEW;
+	int bottom	= center.y + VIEW > height ? height : center.y + VIEW + 20;
 
 	rect = { left,top,right,bottom };
 	//line
@@ -155,8 +152,6 @@ void GMap::Show(int pX, int pY)
 		DrawSmTiles();
 	}
 
-
-
 	//Objects
 	if (keyHH)
 	{
@@ -166,14 +161,12 @@ void GMap::Show(int pX, int pY)
 	g_line->Draw(400.0f, 284.0f, 400.0f, 316.0f, 0xffffffff);
 	g_line->Draw(376.0f, 300.0f, 424.0f, 300.0f, 0xffffffff);
 
-	//玩家绘制
-	GMap::GoXY();
-
-	g_player->Show();
+	//绘制人物
+	g_player->Move();
 
 	//人物坐标
 	wchar_t buf[50] = { 0 };
-	wsprintf(buf, L"xy：[%d,%d]", static_cast<int>(pos.x), static_cast<int>(pos.y));
+	wsprintf(buf, L"xy：[%d,%d]", static_cast<int>(center.x), static_cast<int>(center.y));
 	g_text->Draw(buf, 380, 300, 800, 600, 0xffffffff);
 
 	if (keyHH)
@@ -187,75 +180,16 @@ void GMap::Show(int pX, int pY)
 		DrawAnimation();
 	}
 
-
-	//F
-	if (::GetAsyncKeyState(0x46) & 0x8000f) {
-		if (keyF)
-		{
-			keyFF = keyFF ? false : true;
-			keyF = false;
-		}
-	}
-	else {
-		keyF = true;
-	}
-
-	//G
-	if (::GetAsyncKeyState(0x47) & 0x8000f) {
-		if (keyG)
-		{
-			keyGG = keyGG ? false : true;
-			keyG = false;
-		}
-	}
-	else {
-		keyG = true;
-	}
-
-	//H
-	if (::GetAsyncKeyState(0x48) & 0x8000f) {
-		if (keyH)
-		{
-			keyHH = keyHH ? false : true;
-			keyH = false;
-		}
-		
-	}
-	else {
-		keyH = true;
-	}
-	
-	//J
-	if (::GetAsyncKeyState(0x4A) & 0x8000f) {
-		if (keyJ)
-		{
-			keyJJ = keyJJ ? false : true;
-			keyJ = false;
-		}
-	}
-	else {
-		keyJ = true;
-	}
-
-	//K
-	if (::GetAsyncKeyState(0x4B) & 0x8000f) {
-		if (keyK)
-		{
-			keyKK = keyKK ? false : true;
-			keyK = false;
-		}
-	}
-	else {
-		keyK = true;
-	}
+	//控制绘制
+	BtnState();
 }
 
 
 bool GMap::GetLightWorldXY(float X, float Y, float& mX, float& mY)
 {
 	//(0,0)=>(24,16) (1,1)=>(72,48)
-	mX = X * map.x + 400.0f - (pos.x * map.x) - map.x/2;
-	mY = Y * map.y + 300.0f - (pos.y * map.y) - map.y/2;
+	mX = X * map.x + 400.0f - (center.x * map.x) - map.x/2;
+	mY = Y * map.y + 300.0f - (center.y * map.y) - map.y/2;
 	return true;
 }
 
@@ -477,9 +411,9 @@ void GMap::DrawPlayer()
 	int object_sort = 0;
 	int file_area = 0;
 
-	for (int x = pos.x; x < pos.x + 2; x++)
+	for (int x = center.x; x < center.x + 2; x++)
 	{
-		for (int y = pos.y + 1; y < rect.bottom; y++)
+		for (int y = center.y + 1; y < rect.bottom; y++)
 		{
 			map_sort = x * m_MapHeader.height + y;
 
@@ -505,7 +439,7 @@ void GMap::DrawPlayer()
 				GWzlDraw* tObject = g_Objects[file_area].at(object_sort);
 
 				//计算当前与人物Y距离
-				int PosHeight = (y - pos.y) * map.y;
+				int PosHeight = (y - center.y) * map.y;
 				if (tObject->sImage.height > PosHeight) {
 
 					//初始化一个
@@ -623,8 +557,8 @@ void GMap::DrawWorldLine() {
 bool GMap::GetWorldXY(float X, float Y, float& mX, float& mY, bool IsCenter)
 {
 	//(0,0)=>(24,16) (1,1)=>(72,48)
-	mX = X * map.x + 400.0f - (pos.x * map.x);
-	mY = Y * map.y + 300.0f - (pos.y * map.y);
+	mX = X * map.x + 400.0f - (center.x * map.x);
+	mY = Y * map.y + 300.0f - (center.y * map.y);
 	if (IsCenter)
 	{
 		mX = mX - map.x / 2;
@@ -638,8 +572,8 @@ bool GMap::GetWorldXY(float X, float Y, float& mX, float& mY, bool IsCenter)
 bool GMap::GetMapWorldXY(GWzlDraw* GDraw, float X, float Y, float& mX, float& mY)
 {
 	//mx = 屏幕偏移 + （地图x * 格子宽度） - （人物x * 格子宽度） - （格子宽度/2）- 图像偏移x
-	mX = 400.0f + (X * map.x) - (pos.x * map.x) - (map.x / 2) - GDraw->sImage.x;
-	mY = 300.0f + (Y * map.y) - (pos.y * map.y) - (map.y / 2) - GDraw->sImage.y - GDraw->sImage.height;
+	mX = 400.0f + (X * map.x) - (center.x * map.x) - (map.x / 2) - GDraw->sImage.x;
+	mY = 300.0f + (Y * map.y) - (center.y * map.y) - (map.y / 2) - GDraw->sImage.y - GDraw->sImage.height;
 	return true;
 }
 
@@ -659,14 +593,17 @@ bool GMap::keyMouse(int x, int y, BUTTON_KEY bk)
 	switch (bk)
 	{
 	case L_BUTTON_DOWN:
-		dir = HasDir(angle);
-		g_player->Load(WALK, dir);
-		swprintf_s(buf, TEXT("左键按下：%d,%d;\t角度:%d°;方向:\t%d\n"), x, y, angle, dir);
+		g_player->mState = WALK;
+		g_player->SetDir(angle);
+		swprintf_s(buf, TEXT("左键按下：%d,%d;\t角度:%d°;方向:\t%d\n"), x, y, angle, g_player->mDir);
 		break;
 	case L_BUTTON_UP:
 		//swprintf_s(buf, TEXT("左键弹起：%d,%d\n"), x, y);
 		break;
 	case R_BUTTON_DOWN:
+		g_player->mState = RUN;
+		g_player->SetDir(angle);
+		swprintf_s(buf, TEXT("左键按下：%d,%d;\t角度:%d°;方向:\t%d\n"), x, y, angle, g_player->mDir);
 		//swprintf_s(buf, TEXT("右键按下：%d,%d\n"), x, y);
 		break;
 	case R_BUTTON_UP:
@@ -680,75 +617,69 @@ bool GMap::keyMouse(int x, int y, BUTTON_KEY bk)
 	return false;
 }
 
-DIRECTION GMap::HasDir(int angle)
+
+//按钮开启各种状态
+void GMap::BtnState()
 {
-	state = WALK;
-
-	if (angle >= -112.5 && angle < -67.5){
-		return UP;
+	//F
+	if (::GetAsyncKeyState(0x46) & 0x8000f) {
+		if (keyF)
+		{
+			keyFF = keyFF ? false : true;
+			keyF = false;
+		}
 	}
-	else if (angle >= -67.5 && angle < -22.5){
-		return RIGHT_UP;
-	}
-	else if (angle >= -22.5 && angle < 22.5){
-		return RIGHT;
-	}
-	else if (angle >= 22.5 && angle < 67.5){
-		return RIGHT_DOWN;
-	}
-	else if (angle >= 67.5 && angle < 112.5){
-		return DOWN;
-	}
-	else if (angle >= 112.5 && angle < 157.5){
-		return LEFT_DOWN;
-	}
-	else if ((angle >= 157.5 && angle <= 179) || (angle >= -179 && angle < -157.5)){
-		return LEFT;
-	}else if (angle >= -157.5 && angle <= -112.5) {
-		return LEFT_UP;
-	}
-	return DOWN;
-}
-
-void GMap::GoXY()
-{
-	if ( ! time.CountDown(50)) {
-		return;
+	else {
+		keyF = true;
 	}
 
-	switch (state)
-	{
-	case STAND:
-		break;
-	case WALK:
-		pos.x += 0.07f;
-		if (abs(pos.x - bu) >= 1) {
-			bu = pos.x;
-			state = STAND;
-			g_player->Load(state, dir);
+	//G
+	if (::GetAsyncKeyState(0x47) & 0x8000f) {
+		if (keyG)
+		{
+			keyGG = keyGG ? false : true;
+			keyG = false;
+		}
+	}
+	else {
+		keyG = true;
+	}
+
+	//H
+	if (::GetAsyncKeyState(0x48) & 0x8000f) {
+		if (keyH)
+		{
+			keyHH = keyHH ? false : true;
+			keyH = false;
 		}
 
-		break;
-	case RUN:
-		break;
-	case ATTACK_POS:
-		break;
-	case ATTACK:
-		break;
-	case ATTACK2:
-		break;
-	case ATTACK3:
-		break;
-	case SPELLS:
-		break;
-	case DIG_MEAT:
-		break;
-	case INJURED:
-		break;
-	case DEATH:
-		break;
-	default:
-		break;
+	}
+	else {
+		keyH = true;
+	}
+
+	//J
+	if (::GetAsyncKeyState(0x4A) & 0x8000f) {
+		if (keyJ)
+		{
+			keyJJ = keyJJ ? false : true;
+			keyJ = false;
+		}
+	}
+	else {
+		keyJ = true;
+	}
+
+	//K
+	if (::GetAsyncKeyState(0x4B) & 0x8000f) {
+		if (keyK)
+		{
+			keyKK = keyKK ? false : true;
+			keyK = false;
+		}
+	}
+	else {
+		keyK = true;
 	}
 }
 

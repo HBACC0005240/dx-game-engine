@@ -40,7 +40,7 @@ void GWzlData::Load(HUM_STATE state, DIRECTION dir,int frame,GWzlDraw * pDraw ,i
 	pWzx->GetOneOffset(state, dir, frame, &offset, totalFrame);
 	if (offset == 0)
 	{
-		OutputDebugString(TEXT("偏移为0，不加载！\n"));
+		//OutputDebugString(TEXT("偏移为0，不加载！\n"));
 		fclose(fp);
 		return;
 	}
