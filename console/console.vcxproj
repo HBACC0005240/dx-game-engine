@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="console.cpp" />
+    <ClCompile Include="升级.cpp" />
     <ClCompile Include="左移操作符.cpp" />
     <ClCompile Include="类中声明类.cpp" />
     <ClCompile Include="继承多态.cpp" />

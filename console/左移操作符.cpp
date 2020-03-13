@@ -1,7 +1,7 @@
 #include <iostream>
 #include <Windows.h>
 using namespace std;
-int main() {
+int _3main() {
 
 
 	BYTE sh1 = 0b00110011;
