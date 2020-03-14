@@ -204,6 +204,18 @@ LRESULT CALLBACK GameWind::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 	{
 		pt.x = LOWORD(lParam); //取得x的坐标
 		pt.y = HIWORD(lParam); //取得y的坐标
+		if (wParam == MK_LBUTTON)
+		{
+			wsprintf(buf, L"鼠标移动:%d,%d\n", pt.x,pt.y);
+			OutputDebugString(buf);
+			gWnd->keyMouse(pt.x, pt.y, L_MOVE_BUTTON_DOWN);
+		}
+		if (wParam == MK_RBUTTON)
+		{
+			wsprintf(buf, L"鼠标移动:%d,%d\n", pt.x, pt.y);
+			OutputDebugString(buf);
+			gWnd->keyMouse(pt.x, pt.y, R_MOVE_BUTTON_DOWN);
+		}
 		break;
 	}
 	default:

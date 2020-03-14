@@ -1,5 +1,6 @@
 #include "GMap.h"
 #include <unordered_map>
+#include <algorithm>
 #include "DrawLine.h"
 #include "GAnimation.h"
 #include "GPlayer.h"
@@ -16,7 +17,8 @@ typedef std::pair<int, GAnimation*> GAni;
 
 //资源对象池
 GWzlData* Tiles;//大地砖
-GWzlData* SmTiles;//小地砖
+GWzlData* SmTiles[6];//小地砖
+GWzlData* no_Smtiles;//禁止通行
 GWzlData* Objects[6];//物件
 GWzlData* pWzlHum;//人物资源
 GPlayer* g_player;//人物
@@ -35,9 +37,9 @@ GAniMap g_Animation;//灯泡
 POS map = { 48.0f,32.0f };//地图小格子信息
 POS center = { 0,0 };//地图中心点，（人物给修改）
 
-bool keyF = false, keyFF = true;
+bool keyF = false, keyFF = false;
 bool keyG = false, keyGG = true;
-bool keyH = false, keyHH = true;
+bool keyH = false, keyHH = false;
 bool keyJ = false, keyJJ = true;
 bool keyK = false, keyKK = true;
 
@@ -51,6 +53,7 @@ GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice, LPD3DXFONT d3dFont)
 	for (int i = 0; i < 5; i++)
 	{
 		Objects[i] = nullptr;
+		SmTiles[i] = nullptr;
 	}
 	sprintf_s(m_MapFile, ".\\map\\%s.map", file);
 
@@ -60,7 +63,8 @@ GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice, LPD3DXFONT d3dFont)
 	g_text = new DrawGText(p_d3dFont);
 
 	Tiles = nullptr;
-	SmTiles = nullptr;
+	//SmTiles = nullptr;
+
 
 	//加载人物图片
 	char humfile[] = ".\\Data\\hum";
@@ -68,13 +72,15 @@ GMap::GMap(char file[], LPDIRECT3DDEVICE9 d3dDevice, LPD3DXFONT d3dFont)
 	//char file[] = ".\\Data\\hum3";
 	//char file[] = ".\\Data\\items";
 	pWzlHum = new GWzlData(humfile);
-	g_player = new GPlayer(pWzlHum, 323, 283, p_d3dDevice);
+	g_player = new GPlayer(pWzlHum, 332, 291, p_d3dDevice, this);
+
+
 }
 
 GMap::~GMap()
 {
 	delete Tiles;
-	delete SmTiles;
+	delete[] SmTiles;
 	delete[] Objects;
 	delete pWzlHum;
 	delete g_player;
@@ -111,8 +117,8 @@ void GMap::Load()
 	fread(ms_MapInfo, sizeof(MapInfo) * (m_MapHeader.width * m_MapHeader.height), 1, fp);
 
 	fclose(fp);
-}
 
+}
 
 
 void GMap::Show(int pX, int pY)
@@ -131,7 +137,7 @@ void GMap::Show(int pX, int pY)
 	int left	= center.x - VIEW < 0 ? 0 : center.x - VIEW;
 	int top		= center.y - VIEW < 0 ? 0 : center.y - VIEW;
 	int right	= center.x + VIEW > width ? width : center.x + VIEW;
-	int bottom	= center.y + VIEW > height ? height : center.y + VIEW + 20;
+	int bottom	= center.y + VIEW > height ? height : center.y + VIEW + 10;
 
 	rect = { left,top,right,bottom };
 	//line
@@ -208,7 +214,7 @@ void GMap::DrawTiles()
 			map_sort = x * m_MapHeader.height + y;
 			//位与运算 0&1 = 0 去掉最高位
 
-			if (x == 362 && y == 247)
+			if (x == 331 && y == 289)
 			{
 				int i = 0;
 			}
@@ -286,12 +292,20 @@ void GMap::DrawSmTiles()
 
 			if (sm_tiles_sort > 0) {
 
+				if (sm_tiles_sort == 262)
+				{
+					int i = 0;
+				}
+
 				//加载WzxData;
 				char szMapFile[100] = ".\\Data\\SmTiles";
+				if (file_area > 0) {
+					//sprintf_s(szMapFile, ".\\Data\\SmTiles%d", file_area + 1);
+				}
 
 				//加载WzlData
-				if (SmTiles == nullptr) {
-					SmTiles = new GWzlData(szMapFile);
+				if (SmTiles[file_area] == nullptr) {
+					SmTiles[file_area] = new GWzlData(szMapFile);
 				}
 
 				//初始化一个
@@ -299,7 +313,7 @@ void GMap::DrawSmTiles()
 				if (Smtilesit == g_SmTilesMap.end())
 				{
 					GWzlDraw* tTiles = new GWzlDraw(p_d3dDevice);
-					SmTiles->LoadWzl(sm_tiles_sort, tTiles);
+					SmTiles[file_area]->LoadWzl(sm_tiles_sort, tTiles);
 					if (tTiles->data == nullptr)
 					{
 						//跳过本次循环
@@ -317,6 +331,37 @@ void GMap::DrawSmTiles()
 				//p_d3dDevice->Present(NULL, NULL, NULL, NULL);
 				//int i = 0;
 
+			}
+
+			if ( ! CheckMap(x, y))
+			{
+				//加载WzxData;
+				char szMapFile[100] = ".\\Data\\SmTiles";
+
+				//加载WzlData
+				if (SmTiles[0] == nullptr) {
+					SmTiles[0] = new GWzlData(szMapFile);
+				}
+
+				//初始化一个
+				const int no_sort = 59;
+				GDrawMap::const_iterator NoSmtilesit = g_SmTilesMap.find(no_sort);
+				if (NoSmtilesit == g_SmTilesMap.end())
+				{
+					GWzlDraw* tNoTiles = new GWzlDraw(p_d3dDevice);
+					SmTiles[0]->LoadWzl(no_sort, tNoTiles);
+					if (tNoTiles->data == nullptr)
+					{
+						//跳过本次循环
+						delete tNoTiles;
+						continue;
+					}
+					tNoTiles->CreateTexture();
+					g_SmTilesMap.insert(GDrwa(no_sort, tNoTiles));
+				}
+				GWzlDraw* tNoObject = g_SmTilesMap.at(no_sort);
+				GetMapWorldXY(tNoObject, x, y + 1, offsetX, offsetY);
+				tNoObject->Draw(offsetX, offsetY, COLOR_ARGB);
 			}
 		}
 	}
@@ -577,6 +622,7 @@ bool GMap::GetMapWorldXY(GWzlDraw* GDraw, float X, float Y, float& mX, float& mY
 	return true;
 }
 
+
 bool GMap::keyMouse(int x, int y, BUTTON_KEY bk)
 {
 	int px = x - WND_WIDTH/2;
@@ -592,21 +638,27 @@ bool GMap::keyMouse(int x, int y, BUTTON_KEY bk)
 
 	switch (bk)
 	{
+	case L_MOVE_BUTTON_DOWN:
 	case L_BUTTON_DOWN:
+		g_player->L_KEY = L_BUTTON_DOWN;
 		g_player->mState = WALK;
-		g_player->SetDir(angle);
+		g_player->SetDir(angle,1);
 		swprintf_s(buf, TEXT("左键按下：%d,%d;\t角度:%d°;方向:\t%d\n"), x, y, angle, g_player->mDir);
 		break;
 	case L_BUTTON_UP:
+		g_player->L_KEY = L_BUTTON_UP;
 		//swprintf_s(buf, TEXT("左键弹起：%d,%d\n"), x, y);
 		break;
+	case R_MOVE_BUTTON_DOWN:
 	case R_BUTTON_DOWN:
+		g_player->L_KEY = R_BUTTON_DOWN;
 		g_player->mState = RUN;
-		g_player->SetDir(angle);
+		g_player->SetDir(angle,2);
 		swprintf_s(buf, TEXT("左键按下：%d,%d;\t角度:%d°;方向:\t%d\n"), x, y, angle, g_player->mDir);
 		//swprintf_s(buf, TEXT("右键按下：%d,%d\n"), x, y);
 		break;
 	case R_BUTTON_UP:
+		g_player->L_KEY = R_BUTTON_UP;
 		//swprintf_s(buf, TEXT("右键弹起：%d,%d\n"), x, y);
 		break;
 	default:
@@ -615,6 +667,24 @@ bool GMap::keyMouse(int x, int y, BUTTON_KEY bk)
 
 	OutputDebugString(buf);
 	return false;
+}
+
+bool GMap::CheckMap(int x, int y)
+{
+	int sort = x * m_MapHeader.height + y;
+	//位与运算 0&1 = 0 去掉最高位
+
+	if (x == 331 && y == 289)
+	{
+		int i = 0;
+	}
+
+	//Tiles
+	int bsort = ((ms_MapInfo[sort].wBkImg & 0b1000000000000000) > 15);
+	if (bsort == 1){
+		return false;
+	}
+	return true;
 }
 
 

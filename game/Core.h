@@ -19,8 +19,10 @@ enum BUTTON_KEY
 {
     L_BUTTON_DOWN = 0,
     L_BUTTON_UP = 1,
+    L_MOVE_BUTTON_DOWN = 6,
     R_BUTTON_DOWN = 2,
     R_BUTTON_UP = 3,
+    R_MOVE_BUTTON_DOWN = 7,
 
     KB_DOWN = 4,
     KB_UP = 5,

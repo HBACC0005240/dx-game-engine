@@ -2,6 +2,7 @@
 #include "GWzlData.h"
 #include "GWzlOffset.h"
 #include <unordered_map>
+#include "GMap.h"
 
 struct POS
 {
@@ -27,11 +28,16 @@ public:
 	DIRECTION mDir = DOWN;
 	static int mFrame;
 	GTime time;
+	GMap* mMap;
+	int mAngle;
+	int mLang;
+	static BUTTON_KEY L_KEY;
+	static BUTTON_KEY R_KEY;
 public:
-	GPlayer(GWzlData* _wzl, float x, float y, LPDIRECT3DDEVICE9 d3dDevice);
+	GPlayer(GWzlData* _wzl, float x, float y, LPDIRECT3DDEVICE9 d3dDevice,GMap* _map);
 	~GPlayer();
 	void Load();
-	void SetDir(int angle);
+	void SetDir(int angle, int lang = 1);
 	void Show(int frameRate = 150);
 	void Move();
 };

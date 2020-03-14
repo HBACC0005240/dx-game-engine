@@ -217,7 +217,7 @@ void Graphics::Render()
 	g_text->Draw(pos, 0, 80, 800, 600, 0xffffffff);
 
 	//说明
-	g_text->Draw(L"移动：[W A S D] 移动 每次移动一格", 0, 100, 800, 600, 0xffffffff);
+	g_text->Draw(L"移动：[左键]-行走 [右键]-跑步", 0, 100, 800, 600, 0xffffffff);
 	g_text->Draw(L"绘制：[F]-Tiles [G]-SmTiles [H]-Objects [J]-Animation [K]-坐标线", 0, 120, 800, 600, 0xffffffff);
 	//-----------------------------
 	m_d3dDevice->EndScene();

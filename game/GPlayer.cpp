@@ -1,13 +1,14 @@
 #include "GPlayer.h"
 #include "GWzlDraw.h"
+
 int GPlayer::mFrame = 0;
 
-GPlayer::GPlayer(GWzlData* _wzl, float x, float y, LPDIRECT3DDEVICE9 d3dDevice)
+GPlayer::GPlayer(GWzlData* _wzl, float x, float y, LPDIRECT3DDEVICE9 d3dDevice,GMap* _map)
 {
 	OutputDebugString(L"GPlayer()¹¹Ôì\n");
 	mpWzl = _wzl;
 	nextPos = mPos = { x,y };
-
+	mMap = _map;
 	p_d3dDevice = d3dDevice;
 }
 
@@ -54,6 +55,8 @@ void GPlayer::Load()
 	}
 }
 
+BUTTON_KEY GPlayer::L_KEY = L_BUTTON_UP;
+BUTTON_KEY GPlayer::R_KEY = R_BUTTON_UP;
 
 void GPlayer::Move()
 {
@@ -86,6 +89,13 @@ void GPlayer::Move()
 		break;
 	default:
 		break;
+	}
+
+	if ( ! mMap->CheckMap(nextPos.x, nextPos.y)) {
+		nextPos = mPos;
+		mState = STAND;
+		Load();
+		return;
 	}
 
 	if (nextPos.x > mPos.x){
@@ -139,17 +149,27 @@ void GPlayer::Move()
 	//	mState = STAND;
 	//	mXY = { mXY.x,0 };
 	//}
-	
-	
 
+	if (L_KEY == L_BUTTON_DOWN) {
+		SetDir(mAngle, mLang);
+	}
+
+	if (L_KEY == R_BUTTON_DOWN) {
+		SetDir(mAngle, mLang);
+	}
 }
 
-const int lang = 2;
-void GPlayer::SetDir(int angle)
+void GPlayer::SetDir(int angle,int lang)
 {
+	mAngle = angle;
+	mLang = lang;
 	if (nextPos.x != mPos.x || nextPos.y != mPos.y){
 		return;
 	}
+	if (lang == 0){
+		return;
+	}
+
 	nextPos = mPos;
 
 	if (angle >= -112.5 && angle < -67.5) {
@@ -208,6 +228,12 @@ void GPlayer::SetDir(int angle)
 
 		nextPos.x -= lang;
 		nextPos.y -= lang;
+	}
+
+	if ( ! mMap->CheckMap(nextPos.x, nextPos.y)) {
+		nextPos = mPos;
+		SetDir(angle, lang - 1);
+		return;
 	}
 
 	wchar_t buf[50] = { 0 };

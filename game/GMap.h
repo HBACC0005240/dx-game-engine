@@ -56,4 +56,6 @@ public:
 	void BtnState();
 	static bool KeyBoard(char key, BUTTON_KEY bk);
 	static bool keyMouse(int x, int y, BUTTON_KEY bk);
+
+	bool CheckMap(int x,int y);
 };

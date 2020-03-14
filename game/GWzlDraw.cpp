@@ -21,6 +21,8 @@ GWzlDraw::~GWzlDraw()
 	swprintf_s(buf, TEXT("~GWzlDraw()析构 data => %p \n"), data);
 	OutputDebugString(buf);
 	delete data;
+	//m_pTexture->Release();
+	//m_d3dBuffer->Release();
 }
 
 //创建顶点缓存
